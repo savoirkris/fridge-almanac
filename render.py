@@ -56,8 +56,8 @@ def fill(tpl: str, ctx: dict) -> str:
 
 
 def dot_grid(d: date) -> str:
-    out = [f'<div class="h{" we" if i >= 5 else ""}">{c}</div>' for i, c in enumerate("MTWTFSS")]
-    first_wd = date(d.year, d.month, 1).weekday()            # 週一 = 0
+    out = [f'<div class="h{" we" if i in (0, 6) else ""}">{c}</div>' for i, c in enumerate("SMTWTFS")]
+    first_wd = (date(d.year, d.month, 1).weekday() + 1) % 7   # 週日 = 0，放第一欄
     out += ['<div class="dot empty"></div>'] * first_wd
     for day in range(1, calendar.monthrange(d.year, d.month)[1] + 1):
         t = date(d.year, d.month, day)
