@@ -20,16 +20,17 @@
   .today{margin-top:6px;font-size:19px;font-weight:500;min-height:26px;display:flex;gap:10px;align-items:center;}
   .today .hl{color:var(--accent);font-weight:700;}
   .today .lunar{font-weight:400;}
-  .grid{margin-top:20px;display:grid;grid-template-columns:repeat(7,1fr);row-gap:9px;justify-items:center;}
+  .grid{margin-top:18px;display:grid;grid-template-columns:repeat(7,1fr);row-gap:8px;justify-items:center;}
   .grid .h{font-size:13px;font-weight:600;letter-spacing:1px;padding-bottom:2px;}
   .grid .h.we{color:var(--accent);}
-  .dot{width:36px;height:36px;border-radius:50%;box-sizing:border-box;}
+  .dot{width:32px;height:32px;border-radius:50%;box-sizing:border-box;}
   .dot.past{background:#000;}
   .dot.now{background:var(--accent);}
   .dot.future{border:2.5px solid #000;}
   .dot.future.hol{border-color:var(--accent);}
   .dot.empty{visibility:hidden;}
-  .wx{margin-top:auto;border-top:2.5px solid #000;padding-top:14px;}
+  .wx{margin-top:auto;padding-top:22px;}
+  .wx .line{border-top:2.5px solid #000;padding-top:14px;}
   .wxhead{display:flex;align-items:center;gap:12px;white-space:nowrap;}
   .wxhead svg{width:56px;height:56px;flex:none;}
   .wxhead .desc{font-size:27px;font-weight:700;}
@@ -52,10 +53,10 @@
   <div class="month"><span class="en">{{month_en}}</span><span class="zh">{{month_zh}}月</span><span class="yr">{{year}}</span></div>
   <div class="today">{{today_line}}</div>
   <div class="grid">{{grid}}</div>
-  <div class="wx">
+  <div class="wx"><div class="line">
     <div class="wxhead">{{wx_icon}}<span class="desc">{{wx_desc}}</span><span class="temp">{{wx_temp}}</span>
       <div class="meta">{{wx_meta}}</div></div>
     <div class="slots">{{slots}}</div>
-  </div>
+  </div></div>
   <div class="foot"><span>高雄 · 天氣 {{wx_src}}</span><span>更新 {{updated}}</span></div>
 </div></body></html>
