@@ -76,6 +76,18 @@ def _open_meteo(d: date) -> dict:
             "slots": slots, "days": days, "source": "Open-Meteo"}
 
 
+def _icon_from_text(desc: str) -> str:
+    """氣象署的文字描述 → 圖示類別"""
+    if "雷" in desc: return "thunder"
+    if "大雨" in desc or "豪雨" in desc: return "rain"
+    if "雨" in desc: return "drizzle" if "短暫" in desc or "局部" in desc else "rain"
+    if "霧" in desc: return "fog"
+    if "陰" in desc: return "overcast"
+    if "多雲" in desc: return "partly" if "晴" in desc else "cloudy"
+    if "晴" in desc: return "sun"
+    return "cloudy"
+
+
 def _cwa_headline(key: str) -> dict:
     r = requests.get(
         "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001",
@@ -94,6 +106,7 @@ def weather(d: date) -> dict:
             try:
                 hl = _cwa_headline(key)
                 w["today"]["desc"] = hl["desc"]
+                w["today"]["icon"] = _icon_from_text(hl["desc"])
                 if hl["pop"] is not None:
                     w["today"]["pop"] = hl["pop"]
                 w["source"] = "中央氣象署 / Open-Meteo"
