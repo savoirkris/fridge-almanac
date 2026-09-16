@@ -14,6 +14,13 @@ from icons import svg
 
 HERE = Path(__file__).parent
 OUT = HERE / "out"
+
+# 本機用 .env 存授權碼（不進 git）；GitHub Actions 用 repo Secrets
+if (HERE / ".env").exists():
+    for line in (HERE / ".env").read_text().splitlines():
+        if "=" in line and not line.startswith("#"):
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
 def find_chrome() -> str:
     """CHROME_BIN 環境變數優先；否則依平台找 Chrome / Chromium。"""
     if os.environ.get("CHROME_BIN"):
