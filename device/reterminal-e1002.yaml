@@ -7,7 +7,7 @@
 # 需要 ESPHome 2025.11.1 以上。
 
 substitutions:
-  image_url: "https://<你的GitHub帳號>.github.io/fridge-almanac/device.png"
+  image_url: "https://savoirkris.github.io/fridge-almanac/device.png"
 
 esphome:
   name: fridge-calendar
