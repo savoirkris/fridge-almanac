@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>日曆</title>
+<style>
+  /* 480×800 直式。只用電子紙能顯示的黑、白、紅、黃、藍 */
+  :root{--red:#e60012;--yellow:#f5c400;--blue:#0040ff;--ink:#000;--bg:#fff;--accent:#e60012;}
+  /* 主題由 render.py 以 :root{--bg:#ffffff;--accent:#e60012;} 覆寫 */
+  :root{--bg:#ffffff;--accent:#e60012;}
+  html,body{margin:0;width:480px;height:800px;background:var(--bg);color:var(--ink);
+    font-family:"Helvetica Neue","Noto Sans TC","PingFang TC",sans-serif;overflow:hidden;}
+  .page{box-sizing:border-box;padding:28px 34px 20px;height:800px;display:flex;flex-direction:column;}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;}
+  .num{font-size:176px;font-weight:800;line-height:.86;letter-spacing:-8px;margin-left:-6px;}
+  .wd{text-align:right;padding-bottom:10px;}
+  .wd .en{font-size:30px;font-weight:400;letter-spacing:1px;}
+  .wd .zh{font-size:18px;font-weight:500;margin-top:2px;}
+  .month{margin-top:16px;display:flex;align-items:baseline;gap:12px;}
+  .month .en{font-size:28px;font-weight:600;letter-spacing:4px;}
+  .month .zh{font-size:22px;font-weight:400;}
+  .month .yr{margin-left:auto;font-size:22px;font-weight:400;letter-spacing:2px;}
+  .today{margin-top:6px;font-size:19px;font-weight:500;min-height:26px;display:flex;gap:10px;align-items:center;}
+  .today .hl{color:var(--accent);font-weight:700;}
+  .today .lunar{font-weight:400;}
+  .grid{margin-top:20px;display:grid;grid-template-columns:repeat(7,1fr);row-gap:9px;justify-items:center;}
+  .grid .h{font-size:13px;font-weight:600;letter-spacing:1px;padding-bottom:2px;}
+  .grid .h.we{color:var(--accent);}
+  .dot{width:36px;height:36px;border-radius:50%;box-sizing:border-box;}
+  .dot.past{background:#000;}
+  .dot.now{background:var(--accent);}
+  .dot.future{border:2.5px solid #000;}
+  .dot.future.hol{border-color:var(--accent);}
+  .dot.empty{visibility:hidden;}
+  .wx{margin-top:auto;border-top:2.5px solid #000;padding-top:14px;}
+  .wxhead{display:flex;align-items:center;gap:12px;white-space:nowrap;}
+  .wxhead svg{width:56px;height:56px;flex:none;}
+  .wxhead .desc{font-size:27px;font-weight:700;}
+  .wxhead .temp{font-size:22px;font-weight:300;}
+  .wxhead .meta{margin-left:auto;text-align:right;font-size:13px;font-weight:500;line-height:1.5;}
+  .slots{display:grid;grid-template-columns:repeat(4,1fr);margin-top:14px;text-align:center;}
+  .slot .n{font-size:15px;font-weight:600;}
+  .slot .hrs{font-size:12px;font-weight:500;letter-spacing:.5px;}
+  .slot svg{width:44px;height:44px;margin:6px 0 2px;}
+  .slot .t{font-size:19px;font-weight:600;}
+  .slot .p{font-size:14px;font-weight:500;color:var(--blue);}
+  .slot .p.dry{color:#000;font-weight:300;}
+  .foot{margin-top:14px;display:flex;justify-content:space-between;font-size:11px;font-weight:500;letter-spacing:2px;}
+</style></head>
+<body><div class="page">
+  <div class="head">
+    <div class="num">16</div>
+    <div class="wd"><div class="en">Wed</div><div class="zh">星期三</div></div>
+  </div>
+  <div class="month"><span class="en">SEPTEMBER</span><span class="zh">九月</span><span class="yr">2026</span></div>
+  <div class="today"><span class="lunar">秋分 9/23</span><span>·</span><span class="lunar">農曆八月初六</span></div>
+  <div class="grid"><div class="h">M</div><div class="h">T</div><div class="h">W</div><div class="h">T</div><div class="h">F</div><div class="h we">S</div><div class="h we">S</div><div class="dot empty"></div><div class="dot past" title="1"></div><div class="dot past" title="2"></div><div class="dot past" title="3"></div><div class="dot past" title="4"></div><div class="dot past" title="5"></div><div class="dot past" title="6"></div><div class="dot past" title="7"></div><div class="dot past" title="8"></div><div class="dot past" title="9"></div><div class="dot past" title="10"></div><div class="dot past" title="11"></div><div class="dot past" title="12"></div><div class="dot past" title="13"></div><div class="dot past" title="14"></div><div class="dot past" title="15"></div><div class="dot now" title="16"></div><div class="dot future" title="17"></div><div class="dot future" title="18"></div><div class="dot future" title="19"></div><div class="dot future" title="20"></div><div class="dot future" title="21"></div><div class="dot future" title="22"></div><div class="dot future" title="23"></div><div class="dot future" title="24"></div><div class="dot future hol" title="25"></div><div class="dot future" title="26"></div><div class="dot future" title="27"></div><div class="dot future hol" title="28"></div><div class="dot future" title="29"></div><div class="dot future" title="30"></div></div>
+  <div class="wx">
+    <div class="wxhead"><svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg"><path d="M20 50h26a11 11 0 0 0 1-22 15 15 0 0 0-29 4 9 9 0 0 0 2 18z" fill="#fff" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/><g fill="#0040ff"><circle cx="24" cy="58" r="2.2"/><circle cx="34" cy="58" r="2.2"/><circle cx="44" cy="58" r="2.2"/></g></svg><span class="desc">毛毛雨</span><span class="temp">26–31°C</span>
+      <div class="meta">降雨 51%<br>紫外線 過量<br>日出 05:45 · 日落 18:01</div></div>
+    <div class="slots"><div class="slot"><div class="n">清晨</div><div class="hrs">00–06</div><svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg"><g transform="translate(12 -4) scale(.6)"><circle cx="32" cy="32" r="11" fill="#f5c400"/><g stroke="#f5c400" stroke-width="4" stroke-linecap="round"><line x1="32" y1="32" x2="32" y2="8" transform="rotate(0 32 32)"/><line x1="32" y1="32" x2="32" y2="8" transform="rotate(45 32 32)"/><line x1="32" y1="32" x2="32" y2="8" transform="rotate(90 32 32)"/><line x1="32" y1="32" x2="32" y2="8" transform="rotate(135 32 32)"/><line x1="32" y1="32" x2="32" y2="8" transform="rotate(180 32 32)"/><line x1="32" y1="32" x2="32" y2="8" transform="rotate(225 32 32)"/><line x1="32" y1="32" x2="32" y2="8" transform="rotate(270 32 32)"/><line x1="32" y1="32" x2="32" y2="8" transform="rotate(315 32 32)"/></g></g><path d="M20 50h26a11 11 0 0 0 1-22 15 15 0 0 0-29 4 9 9 0 0 0 2 18z" fill="#fff" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/></svg><div class="t">27–28°</div><div class="p dry">0%</div></div><div class="slot"><div class="n">上午</div><div class="hrs">06–12</div><svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg"><path d="M20 50h26a11 11 0 0 0 1-22 15 15 0 0 0-29 4 9 9 0 0 0 2 18z" fill="#fff" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/><g fill="#0040ff"><circle cx="24" cy="58" r="2.2"/><circle cx="34" cy="58" r="2.2"/><circle cx="44" cy="58" r="2.2"/></g></svg><div class="t">26–31°</div><div class="p dry">0%</div></div><div class="slot"><div class="n">下午</div><div class="hrs">12–18</div><svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg"><path d="M20 50h26a11 11 0 0 0 1-22 15 15 0 0 0-29 4 9 9 0 0 0 2 18z" fill="#fff" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/><g fill="#0040ff"><circle cx="24" cy="58" r="2.2"/><circle cx="34" cy="58" r="2.2"/><circle cx="44" cy="58" r="2.2"/></g></svg><div class="t">29–31°</div><div class="p ">51%</div></div><div class="slot"><div class="n">晚上</div><div class="hrs">18–24</div><svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg"><path d="M20 50h26a11 11 0 0 0 1-22 15 15 0 0 0-29 4 9 9 0 0 0 2 18z" fill="#fff" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/><g fill="#0040ff"><circle cx="24" cy="58" r="2.2"/><circle cx="34" cy="58" r="2.2"/><circle cx="44" cy="58" r="2.2"/></g></svg><div class="t">27–28°</div><div class="p ">46%</div></div></div>
+  </div>
+  <div class="foot"><span>高雄 · 天氣 Open-Meteo</span><span>更新 09/16 20:51</span></div>
+</div></body></html>
