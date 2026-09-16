@@ -1,0 +1,68 @@
+# reTerminal E1002 的 ESPHome 設定（草稿，機器到貨後再實測）
+# 行為：開機 → 連 Wi-Fi → 抓雲端的 device.png（800×480，六色）→ 顯示 → 深度睡眠 6 小時
+#
+# 腳位與面板設定請以 Seeed 官方文件為準，貼進 display 區塊：
+#   https://wiki.seeedstudio.com/reterminal_e10xx_with_esphome/
+#   https://wiki.seeedstudio.com/reterminal_e10xx_with_esphome_advanced/   （電池、深度睡眠）
+# 需要 ESPHome 2025.11.1 以上。
+
+substitutions:
+  image_url: "https://<你的GitHub帳號>.github.io/fridge-almanac/device.png"
+
+esphome:
+  name: fridge-calendar
+  friendly_name: 冰箱日曆
+  on_boot:
+    priority: -100
+    then:
+      - component.update: cal_image
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+
+wifi:
+  ssid: !secret wifi_ssid          # 只能用 2.4GHz
+  password: !secret wifi_password
+  power_save_mode: none
+
+http_request:
+  verify_ssl: false
+
+online_image:
+  - id: cal_image
+    url: ${image_url}
+    format: PNG
+    type: RGB565
+    resize: 800x480
+    update_interval: never
+    on_download_finished:
+      - component.update: epd
+      - delay: 25s                 # 等彩色面板刷新完成
+      - deep_sleep.enter: sleeper
+    on_error:
+      - logger.log: "抓圖失敗，保留舊畫面，睡 1 小時後再試"
+      - deep_sleep.enter:
+          id: sleeper
+          sleep_duration: 1h
+
+display:
+  - platform: epaper_spi
+    id: epd
+    model: Seeed-reTerminal-E1002
+    # cs_pin / dc_pin / reset_pin / busy_pin / spi 設定：照官方文件填
+    update_interval: never
+    lambda: |-
+      it.image(0, 0, id(cal_image));
+
+deep_sleep:
+  id: sleeper
+  run_duration: 120s               # 最多醒 2 分鐘，抓不到圖也會去睡
+  sleep_duration: 6h

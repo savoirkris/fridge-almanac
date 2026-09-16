@@ -1,0 +1,4 @@
+lunar_python
+opencc-python-reimplemented
+Pillow
+requests

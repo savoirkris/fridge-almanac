@@ -1,0 +1,39 @@
+name: 每日出圖
+
+on:
+  schedule:
+    # UTC 時間。對應台灣 00:10、06:10、12:10、18:10
+    - cron: "10 16 * * *"
+    - cron: "10 22 * * *"
+    - cron: "10 4 * * *"
+    - cron: "10 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 安裝中文字型與 Chrome
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q fonts-noto-cjk
+          echo "CHROME_BIN=$(which google-chrome)" >> "$GITHUB_ENV"
+      - run: pip install -r requirements.txt
+      - name: 產生圖片
+        env:
+          CWA_API_KEY: ${{ secrets.CWA_API_KEY }}
+          TZ: Asia/Taipei
+        run: python render.py
+      - name: 發佈到 GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          keep_files: false
