@@ -75,7 +75,7 @@ display:
     update_interval: never
     lambda: |-
       it.image(0, 0, id(cal_image));
-      // 電池圖示：畫在底部中間。黑框綠底，低於 20% 整個變紅。
+      // 電池圖示：畫在右下角。黑框綠底，低於 20% 整個變紅。
       float v = id(battery_voltage).state;
       if (!isnan(v) && v > 2.5f) {
         float pct = (v - 3.30f) / (4.15f - 3.30f);
@@ -84,12 +84,11 @@ display:
         bool low = pct < 0.20f;
         Color c = low ? Color(255, 0, 0) : Color(0, 0, 0);          // 外框：平常黑、低電量紅
         Color f = low ? Color(255, 0, 0) : Color(0, 255, 0);        // 填滿：平常綠、低電量紅
-        const int x = 385, y = 453, w = 28, h = 13;
+        const int x = 746, y = 453, w = 21, h = 11;                 // 右下角，更新時間的右邊
         it.rectangle(x, y, w, h, c);
-        it.rectangle(x + 1, y + 1, w - 2, h - 2, c);
-        it.filled_rectangle(x + w, y + 4, 3, h - 8, c);
-        int fill = (int) ((w - 6) * pct + 0.5f);
-        if (fill > 0) it.filled_rectangle(x + 3, y + 3, fill, h - 6, f);
+        it.filled_rectangle(x + w, y + 3, 2, h - 6, c);
+        int fill = (int) ((w - 4) * pct + 0.5f);
+        if (fill > 0) it.filled_rectangle(x + 2, y + 2, fill, h - 4, f);
       }
 
 # 電池：GPIO21 開啟量測電路，GPIO1 讀分壓後的電壓（×2）
