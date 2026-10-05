@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>日曆</title>
+<style>
+  /* 800×480 橫式。只用電子紙能顯示的黑、白、紅、黃、藍 */
+  :root{--red:#e60012;--yellow:#f5c400;--blue:#0040ff;--ink:#000;--bg:#fff;--accent:#e60012;}
+  {{theme_css}}
+  html,body{margin:0;width:800px;height:480px;background:var(--bg);color:var(--ink);
+    font-family:"Helvetica Neue","Noto Sans TC","PingFang TC",sans-serif;overflow:hidden;}
+  .page{box-sizing:border-box;width:800px;height:480px;padding:22px 30px 14px;display:flex;flex-direction:column;}
+  .main{flex:1;display:flex;gap:30px;min-height:0;}
+  /* 左欄：日期 */
+  .left{width:318px;display:flex;flex-direction:column;}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;}
+  .num{font-size:190px;font-weight:800;line-height:.84;letter-spacing:-8px;margin-left:-6px;}
+  .wd{text-align:right;padding-bottom:8px;}
+  .wd .en{font-size:30px;font-weight:400;letter-spacing:1px;}
+  .wd .zh{font-size:19px;font-weight:500;margin-top:2px;}
+  .month{margin-top:16px;display:flex;align-items:baseline;gap:10px;}
+  .month .en{font-size:27px;font-weight:600;letter-spacing:3px;}
+  .month .zh{font-size:21px;font-weight:400;}
+  .month .yr{margin-left:auto;font-size:21px;font-weight:400;letter-spacing:2px;}
+  .today{margin-top:6px;font-size:18px;font-weight:500;display:flex;flex-wrap:wrap;gap:2px 9px;align-items:center;}
+  .today .hl{color:var(--accent);font-weight:700;}
+  .today .lunar{font-weight:400;}
+  .wxhead{margin-top:auto;height:124px;box-sizing:border-box;border-top:2.5px solid #000;padding-top:4px;display:flex;align-items:center;gap:12px;white-space:nowrap;}
+  .wxhead svg{width:58px;height:58px;flex:none;}
+  .wxhead .desc{font-size:26px;font-weight:700;line-height:1.15;}
+  .wxhead .temp{font-size:21px;font-weight:400;}
+  .wxhead .meta{margin-left:auto;text-align:right;font-size:13px;font-weight:500;line-height:1.5;}
+  /* 右欄：圓點月曆 + 四時段 */
+  .right{flex:1;display:flex;flex-direction:column;}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:9px;justify-items:center;}
+  .grid .h{font-size:13px;font-weight:600;letter-spacing:1px;padding-bottom:1px;}
+  .grid .h.we{color:var(--accent);}
+  .dot{width:34px;height:34px;border-radius:50%;box-sizing:border-box;}
+  .dot.past{background:#000;}
+  .dot.now{background:var(--accent);}
+  .dot.future{border:2.5px solid #000;}
+  .dot.future.hol{border-color:var(--accent);}
+  .dot.empty{visibility:hidden;}
+  .slots{margin-top:auto;height:124px;box-sizing:border-box;border-top:2.5px solid #000;padding-top:9px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
+  .slot .n{font-size:15px;font-weight:600;}
+  .slot .n span{font-size:11px;font-weight:500;margin-left:4px;letter-spacing:.3px;}
+  .slot svg{width:42px;height:42px;margin:3px 0 0;}
+  .slot .t{font-size:18px;font-weight:600;line-height:1.2;}
+  .slot .p{font-size:14px;font-weight:600;color:var(--blue);}
+  .slot .p.dry{color:#000;font-weight:400;}
+  .foot{margin-top:9px;display:flex;justify-content:space-between;font-size:11px;font-weight:500;letter-spacing:2px;}
+</style></head>
+<body><div class="page">
+  <div class="main">
+    <div class="left">
+      <div class="head">
+        <div class="num">{{day}}</div>
+        <div class="wd"><div class="en">{{wd_en}}</div><div class="zh">{{wd_zh}}</div></div>
+      </div>
+      <div class="month"><span class="en">{{month_en}}</span><span class="zh">{{month_zh}}月</span><span class="yr">{{year}}</span></div>
+      <div class="today">{{today_line}}</div>
+      <div class="wxhead">{{wx_icon}}<div><div class="desc">{{wx_desc}}</div><div class="temp">{{wx_temp}}</div></div>
+        <div class="meta">{{wx_meta}}</div></div>
+    </div>
+    <div class="right">
+      <div class="grid">{{grid}}</div>
+      <div class="slots">{{slots}}</div>
+    </div>
+  </div>
+  <div class="foot"><span>高雄 · 天氣 {{wx_src}}</span><span>更新 {{updated}}</span></div>
+</div></body></html>

@@ -39,4 +39,6 @@ DEVICE_ROTATE=270 ./.venv/bin/python render.py     # 機器反過來掛時改轉
 
 - TRMNL 韌體在 E1002 上只有黑白模式，所以不走 TRMNL，用 ESPHome。
 - 只支援 2.4GHz Wi-Fi。
-- 機身是橫式，這個版面是直式，掛的時候轉 90 度；方向不對就改 `DEVICE_ROTATE`。
+- 預設出橫式 800×480 版面（`template_landscape.html`）。要直式加 `--layout portrait`，圖片會轉 90 度，方向用 `DEVICE_ROTATE` 調。
+- 黃色在電子紙上對比很低，圖示一律黑色描邊、黃色只當填色。
+- 綠色重新整理鍵可喚醒並立即更新；平常每天 01:30、06:30、12:30、18:30 自動更新。

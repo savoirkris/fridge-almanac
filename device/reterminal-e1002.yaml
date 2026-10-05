@@ -27,6 +27,8 @@ psram:
 logger:
   level: INFO
   hardware_uart: UART0      # 機器的 USB 是外接序列晶片，接在 UART0
+  logs:
+    captive_portal: WARN    # 預設會把輸入的 Wi-Fi 密碼印在紀錄裡，關掉
 
 wifi:
   ap:
