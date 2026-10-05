@@ -26,6 +26,7 @@ psram:
 
 logger:
   level: INFO
+  hardware_uart: UART0      # 機器的 USB 是外接序列晶片，接在 UART0
 
 wifi:
   ap:
