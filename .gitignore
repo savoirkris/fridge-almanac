@@ -5,3 +5,4 @@ holidays_*.json
 __pycache__/
 .DS_Store
 .env
+firmware/

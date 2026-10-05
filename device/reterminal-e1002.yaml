@@ -1,7 +1,7 @@
 # reTerminal E1002 冰箱日曆韌體（ESPHome 2025.11.1 以上）
 # 行為：醒來 → 連 Wi-Fi → 抓雲端的 device.png（800×480 六色）→ 顯示 → 深度睡眠到下一個時段
 # Wi-Fi 帳密不寫在這裡：刷機後用 web.esphome.io（Improv）或手機連「Fridge-Calendar」熱點設定。
-# 右側白色按鈕（GPIO4）可隨時喚醒並立即更新。
+# 綠色重新整理鍵（GPIO3）可隨時喚醒並立即更新。
 
 substitutions:
   image_url: "https://savoirkris.github.io/fridge-almanac/device.png"
@@ -76,7 +76,7 @@ display:
 deep_sleep:
   id: sleeper
   wakeup_pin:
-    number: GPIO4
+    number: GPIO3
     inverted: true
     mode:
       input: true
