@@ -22,11 +22,12 @@
   .today{margin-top:6px;font-size:18px;font-weight:500;display:flex;flex-wrap:wrap;gap:2px 9px;align-items:center;}
   .today .hl{color:var(--accent);font-weight:700;}
   .today .lunar{font-weight:400;}
-  .wxhead{margin-top:auto;height:124px;box-sizing:border-box;border-top:2.5px solid #000;padding-top:4px;display:flex;align-items:center;gap:12px;white-space:nowrap;}
-  .wxhead svg{width:58px;height:58px;flex:none;}
-  .wxhead .desc{font-size:26px;font-weight:700;line-height:1.15;}
-  .wxhead .temp{font-size:21px;font-weight:400;}
-  .wxhead .meta{margin-left:auto;text-align:right;font-size:13px;font-weight:500;line-height:1.5;}
+  .wxhead{margin-top:auto;height:138px;box-sizing:border-box;border-top:2.5px solid #000;padding-top:8px;}
+  .wxtop{display:flex;align-items:center;gap:12px;white-space:nowrap;}
+  .wxtop svg{width:54px;height:54px;flex:none;}
+  .wxtop .desc{font-size:27px;font-weight:700;}
+  .wxtop .temp{margin-left:auto;font-size:25px;font-weight:500;}
+  .wxhead .meta{margin-top:6px;font-size:18px;font-weight:500;line-height:1.5;white-space:nowrap;}
   /* 右欄：圓點月曆 + 四時段 */
   .right{flex:1;display:flex;flex-direction:column;}
   .grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:9px;justify-items:center;}
@@ -38,16 +39,28 @@
   .dot.future{border:2.5px solid #000;}
   .dot.future.hol{border-color:var(--accent);}
   .dot.empty{visibility:hidden;}
-  .slots{margin-top:auto;height:124px;box-sizing:border-box;border-top:2.5px solid #000;padding-top:9px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
-  .slot .n{font-size:15px;font-weight:600;}
-  .slot .n span{font-size:11px;font-weight:500;margin-left:4px;letter-spacing:.3px;}
-  .slot svg{width:42px;height:42px;margin:3px 0 0;}
-  .slot .t{font-size:18px;font-weight:600;line-height:1.2;}
-  .slot .p{font-size:14px;font-weight:600;color:var(--blue);}
+  .slots{margin-top:auto;height:138px;box-sizing:border-box;border-top:2.5px solid #000;padding-top:9px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
+  .slot .n{font-size:21px;font-weight:700;}
+  .slot .n span{font-size:12px;font-weight:500;margin-left:4px;letter-spacing:.3px;}
+  .slot svg{width:42px;height:42px;margin:1px 0 0;}
+  .slot .t{font-size:22px;font-weight:600;line-height:1.2;}
+  .slot .p{font-size:18px;font-weight:600;color:var(--blue);}
   .slot .p.dry{color:#000;font-weight:400;}
+  .nexthol{margin-top:4px;font-size:18px;font-weight:500;display:none;}
+  .nexthol b{color:var(--accent);font-weight:700;}
+  /* 無圓點版：右欄整個給四時段天氣 */
+  .nodots .grid{display:none;}
+  .nodots .nexthol{display:block;}
+  .nodots .slots{margin-top:0;height:auto;flex:1;border-top:none;padding-top:0;align-items:center;}
+  .nodots .slot{border-left:2.5px solid #000;height:100%;display:flex;flex-direction:column;justify-content:center;}
+  .nodots .slot:first-child{border-left:none;}
+  .nodots .slot .n{font-size:30px;}
+  .nodots .slot svg{width:86px;height:86px;margin:18px auto 14px;}
+  .nodots .slot .t{font-size:26px;}
+  .nodots .slot .p{font-size:25px;margin-top:6px;}
   .foot{margin-top:9px;display:flex;justify-content:space-between;font-size:11px;font-weight:500;letter-spacing:2px;}
 </style></head>
-<body><div class="page">
+<body><div class="page {{body_cls}}">
   <div class="main">
     <div class="left">
       <div class="head">
@@ -56,8 +69,11 @@
       </div>
       <div class="month"><span class="en">{{month_en}}</span><span class="zh">{{month_zh}}月</span><span class="yr">{{year}}</span></div>
       <div class="today">{{today_line}}</div>
-      <div class="wxhead">{{wx_icon}}<div><div class="desc">{{wx_desc}}</div><div class="temp">{{wx_temp}}</div></div>
-        <div class="meta">{{wx_meta}}</div></div>
+      <div class="nexthol">{{next_hol}}</div>
+      <div class="wxhead">
+        <div class="wxtop">{{wx_icon}}<span class="desc">{{wx_desc}}</span><span class="temp">{{wx_temp}}</span></div>
+        <div class="meta">{{wx_meta}}</div>
+      </div>
     </div>
     <div class="right">
       <div class="grid">{{grid}}</div>
