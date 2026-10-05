@@ -79,7 +79,7 @@ def week_strip(d: date) -> str:
     for i in range(7):
         t = start + timedelta(days=i)
         h = holiday_info(t)
-        cls = "now" if t == d else ("hol" if h["holiday"] and h["name"] else ("past" if t < d else ""))
+        cls = "now" if t == d else ("hol" if h["holiday"] else ("past" if t < d else ""))   # 週末與國定假日都紅字
         out.append(f'<div class="d {cls}">{t.day}</div>')
     return "".join(out)
 
