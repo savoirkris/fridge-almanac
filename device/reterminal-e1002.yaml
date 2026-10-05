@@ -130,6 +130,7 @@ script:
             - component.update: battery_voltage
             - logger.log:
                 format: "Battery %.2f V"
+                level: INFO
                 args: ["id(battery_voltage).state"]
             - output.turn_off: battery_enable
             - component.update: cal_image
