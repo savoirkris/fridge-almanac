@@ -7,6 +7,9 @@ import requests
 URL = "https://cdn.jsdelivr.net/gh/ruyut/TaiwanCalendar/data/{year}.json"
 HERE = Path(__file__).parent
 _cache: dict = {}
+# 官方全名太長，畫面上用通稱
+SHORT = {"臺灣光復暨金門古寧頭大捷紀念日": "光復節", "孔子誕辰紀念日/教師節": "教師節",
+         "開國紀念日": "元旦", "農曆除夕": "除夕", "兒童節及民族掃墓節": "兒童節・清明"}
 
 
 def _year(y: int) -> dict:
@@ -28,6 +31,7 @@ def info(d: date) -> dict:
     if not x:
         return {"holiday": d.weekday() >= 5, "name": "", "makeup_work": False}
     desc = x.get("description", "")
+    desc = SHORT.get(desc, desc)
     return {"holiday": bool(x["isHoliday"]), "name": desc if x["isHoliday"] else "",
             "makeup_work": (not x["isHoliday"]) and d.weekday() >= 5}
 

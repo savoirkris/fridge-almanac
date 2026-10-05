@@ -93,7 +93,7 @@ def rng(lo, hi, unit="°"):
     return f"{lo}{unit}" if lo == hi else f"{lo}–{hi}{unit}"
 
 
-def build_html(d: date, theme: str = "classic", layout: str = "landscape") -> str:
+def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
     bg, accent = THEMES[theme]
     a = almanac(d)
     w = weather(d)
@@ -111,14 +111,18 @@ def build_html(d: date, theme: str = "classic", layout: str = "landscape") -> st
         meta = [f'降雨 {t["pop"]}%', f'紫外線 {t["uv_level"]}', f'日出 {t["sunrise"]} · 日落 {t["sunset"]}']
         if w["stale"]:
             meta.append(f'舊資料 {w["fetched_at"][5:]}')
-        if layout.startswith("landscape"):          # 橫式：放大成兩行
+        if layout == "wide":                       # 天氣在右欄：2×2 小格
+            meta = [f'降雨 {t["pop"]}%', f'紫外線 {t["uv_level"]}', f'日出 {t["sunrise"]}', f'日落 {t["sunset"]}']
+            if w["stale"]:
+                meta[1] = f'舊資料 {w["fetched_at"][5:10]}'
+        elif layout.startswith("landscape"):        # 橫式：放大成兩行
             meta = [f'降雨 {t["pop"]}% · 紫外線 {t["uv_level"]}', f'日出 {t["sunrise"]} · 日落 {t["sunset"]}']
             if w["stale"]:
                 meta[0] = f'舊資料 {w["fetched_at"][5:10]} · 降雨 {t["pop"]}%'
         slots = []
         for s in w["slots"]:
             dry = "dry" if s["pop"] < 30 else ""
-            if layout.startswith("landscape"):
+            if layout != "portrait":
                 slots.append(f'<div class="slot"><div class="n">{s["name"]}</div>'
                              f'{svg(s["icon"])}<div class="t">{rng(s["tmin"], s["tmax"])}</div>'
                              f'<div class="p {dry}">{s["pop"]}%</div></div>')
@@ -127,13 +131,25 @@ def build_html(d: date, theme: str = "classic", layout: str = "landscape") -> st
                          f'{svg(s["icon"])}<div class="t">{rng(s["tmin"], s["tmax"])}</div>'
                          f'<div class="p {dry}">{s["pop"]}%</div></div>')
         ctx.update({"wx_icon": svg(t["icon"]), "wx_desc": t["desc"], "wx_temp": rng(t["tmin"], t["tmax"], "°C"),
-                    "wx_meta": "<br>".join(meta), "slots": "".join(slots), "wx_src": w["source"]})
+                    "wx_meta": "".join(f"<span>{m}</span>" for m in meta) if layout == "wide" else "<br>".join(meta), "slots": "".join(slots), "wx_src": w["source"]})
     else:
         ctx.update({"wx_icon": "", "wx_desc": "天氣暫無資料", "wx_temp": "", "wx_meta": "", "slots": "", "wx_src": "—"})
     nh = next_holiday(d)
-    ctx["next_hol"] = (f'下個假日 <b>{nh[1]}</b> {nh[0].month}/{nh[0].day}（{WD_ZH[nh[0].weekday()]}）· {nh[2]} 天後' if nh else "")
+    ctx["next_hol"] = (f'下個假日 <b>{nh[1]}</b> {nh[0].month}/{nh[0].day} · {nh[2]} 天後' if nh else "")
     ctx["body_cls"] = "nodots" if layout == "landscape-nodots" else ""
-    tpl = "template_landscape.html" if layout.startswith("landscape") else "template.html"
+    # wide 版左欄：第一行節日／節氣，第二行農曆
+    h = holiday_info(d)
+    name = h["name"] or (a["festivals"][0] if a["festivals"] else "")
+    first = []
+    if name:
+        first.append(f'<span class="hl">{name}</span>')
+    if h["makeup_work"]:
+        first.append('<span class="hl">補班</span>')
+    first.append(f'<span class="hl">今日 {a["jieqi_today"]}</span>' if a["jieqi_today"]
+                 else f'{a["jieqi_next"]} {a["jieqi_next_date"]}')
+    ctx["info_l1"] = " · ".join(first)
+    ctx["info_l2"] = f'農曆 {a["lunar_month"]}月{a["lunar_day"]}'
+    tpl = {"wide": "template_wide.html", "portrait": "template.html"}.get(layout, "template_landscape.html")
     return fill((HERE / tpl).read_text(encoding="utf-8"), ctx)
 
 
@@ -175,17 +191,17 @@ def main():
     """用法：render.py [YYYY-MM-DD] [--theme classic|orange|beige]"""
     argv = sys.argv[1:]
     theme = argv[argv.index("--theme") + 1] if "--theme" in argv else "classic"
-    args = [x for x in argv if not x.startswith("--") and x not in THEMES and x not in ("landscape", "landscape-nodots", "portrait")]
+    args = [x for x in argv if not x.startswith("--") and x not in THEMES and x not in ("wide", "landscape", "landscape-nodots", "portrait")]
     d = date.fromisoformat(args[0]) if args else datetime.now(TZ).date()
     OUT.mkdir(exist_ok=True)
-    layout = argv[argv.index("--layout") + 1] if "--layout" in argv else "landscape"
+    layout = argv[argv.index("--layout") + 1] if "--layout" in argv else "wide"
     html = build_html(d, theme, layout)
     (OUT / "calendar.html").write_text(html, encoding="utf-8")
-    screenshot(html, OUT / "calendar.png", size=(800, 480) if layout.startswith("landscape") else (480, 800))
+    screenshot(html, OUT / "calendar.png", size=(480, 800) if layout == "portrait" else (800, 480))
     to_eink(OUT / "calendar.png", OUT / "calendar_eink.png", dither=(theme != "classic"))
     # 機器用：轉成 800×480 橫向、只含六色的 PNG
     dev = Image.open(OUT / "calendar_eink.png")
-    if not layout.startswith("landscape"):         # 直式版面要轉 90 度才符合面板
+    if layout == "portrait":                       # 直式版面要轉 90 度才符合面板
         dev = dev.rotate(ROTATE, expand=True)
     dev.save(OUT / "device.png", optimize=True)
     print("ok", d, theme, OUT / "calendar.png")

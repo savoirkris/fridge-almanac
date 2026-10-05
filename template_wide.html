@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>日曆</title>
+<style>
+  /* 800×480 橫式：左邊日期、右邊整天天氣。只用電子紙能顯示的黑、白、紅、黃、藍 */
+  :root{--red:#e60012;--yellow:#f5c400;--blue:#0040ff;--ink:#000;--bg:#fff;--accent:#e60012;}
+  {{theme_css}}
+  html,body{margin:0;width:800px;height:480px;background:var(--bg);color:var(--ink);
+    font-family:"Helvetica Neue","Noto Sans TC","PingFang TC",sans-serif;overflow:hidden;}
+  .page{box-sizing:border-box;width:800px;height:480px;padding:22px 30px 14px;display:flex;flex-direction:column;}
+  .main{flex:1;display:flex;gap:28px;min-height:0;}
+  /* 左欄：日期 */
+  .left{width:322px;display:flex;flex-direction:column;}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;}
+  .num{font-size:196px;font-weight:800;line-height:.84;letter-spacing:-8px;margin-left:-6px;}
+  .wd{text-align:right;padding-bottom:8px;}
+  .wd .en{font-size:31px;font-weight:400;letter-spacing:1px;}
+  .wd .zh{font-size:21px;font-weight:500;margin-top:2px;}
+  .month{margin-top:16px;display:flex;align-items:baseline;gap:10px;}
+  .month .en{font-size:27px;font-weight:600;letter-spacing:3px;}
+  .month .zh{font-size:22px;font-weight:400;}
+  .month .yr{margin-left:auto;font-size:22px;font-weight:400;letter-spacing:2px;}
+  .info{margin-top:auto;border-top:2.5px solid #000;padding-top:10px;}
+  .info .l1{overflow:hidden;text-overflow:clip;font-size:31px;font-weight:600;line-height:1.35;white-space:nowrap;}
+  .info .l2{overflow:hidden;font-size:20px;font-weight:500;line-height:1.5;white-space:nowrap;margin-top:2px;}
+  .info .hl,.info b{color:var(--accent);font-weight:700;}
+  /* 右欄：天氣 */
+  .right{flex:1;display:flex;flex-direction:column;border-left:2.5px solid #000;padding-left:26px;}
+  .wxtop{display:flex;align-items:center;gap:16px;white-space:nowrap;}
+  .wxtop svg{width:112px;height:112px;flex:none;margin:-6px 0 -8px -8px;}
+  .wxtop .desc{font-size:46px;font-weight:700;line-height:1.15;}
+  .wxtop .temp{font-size:37px;font-weight:500;line-height:1.2;}
+  .meta{margin-top:14px;font-size:24px;font-weight:500;line-height:1.5;white-space:nowrap;display:grid;grid-template-columns:1fr 1fr;}
+  .slots{margin-top:auto;border-top:2.5px solid #000;padding-top:12px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
+  .slot .n{font-size:27px;font-weight:700;}
+  .slot svg{width:74px;height:74px;margin:4px 0 0;}
+  .slot .t{font-size:25px;font-weight:600;line-height:1.25;white-space:nowrap;}
+  .slot .p{font-size:23px;font-weight:600;color:var(--blue);}
+  .slot .p.dry{color:#000;font-weight:400;}
+  .foot{margin-top:9px;display:flex;justify-content:space-between;font-size:11px;font-weight:500;letter-spacing:2px;}
+</style></head>
+<body><div class="page">
+  <div class="main">
+    <div class="left">
+      <div class="head">
+        <div class="num">{{day}}</div>
+        <div class="wd"><div class="en">{{wd_en}}</div><div class="zh">{{wd_zh}}</div></div>
+      </div>
+      <div class="month"><span class="en">{{month_en}}</span><span class="zh">{{month_zh}}月</span><span class="yr">{{year}}</span></div>
+      <div class="info">
+        <div class="l1">{{info_l1}}</div>
+        <div class="l1">{{info_l2}}</div>
+        <div class="l2">{{next_hol}}</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="wxtop">{{wx_icon}}<div><div class="desc">{{wx_desc}}</div><div class="temp">{{wx_temp}}</div></div></div>
+      <div class="meta">{{wx_meta}}</div>
+      <div class="slots">{{slots}}</div>
+    </div>
+  </div>
+  <div class="foot"><span>高雄 · 天氣 {{wx_src}}</span><span>更新 {{updated}}</span></div>
+</div></body></html>
