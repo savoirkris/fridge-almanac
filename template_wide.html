@@ -19,22 +19,30 @@
   .month .en{font-size:27px;font-weight:600;letter-spacing:3px;}
   .month .zh{font-size:22px;font-weight:400;}
   .month .yr{margin-left:auto;font-size:22px;font-weight:400;letter-spacing:2px;}
-  .info{margin-top:auto;border-top:2.5px solid #000;padding-top:10px;}
-  .info .l1{overflow:hidden;text-overflow:clip;font-size:31px;font-weight:600;line-height:1.35;white-space:nowrap;}
-  .info .l2{overflow:hidden;font-size:20px;font-weight:500;line-height:1.5;white-space:nowrap;margin-top:2px;}
+  .info{margin-top:auto;height:140px;box-sizing:border-box;border-top:2px solid #000;padding-top:12px;}
+  .info .l1{overflow:hidden;font-size:25px;font-weight:500;line-height:1.4;white-space:nowrap;}
+  .info .l2{overflow:hidden;font-size:17px;font-weight:400;line-height:1.5;white-space:nowrap;margin-top:3px;}
   .info .hl,.info b{color:var(--accent);font-weight:700;}
-  /* 右欄：天氣 */
-  .right{flex:1;display:flex;flex-direction:column;border-left:2.5px solid #000;padding-left:26px;}
-  .wxtop{display:flex;align-items:center;gap:16px;white-space:nowrap;}
-  .wxtop svg{width:112px;height:112px;flex:none;margin:-6px 0 -8px -8px;}
-  .wxtop .desc{font-size:46px;font-weight:700;line-height:1.15;}
-  .wxtop .temp{font-size:37px;font-weight:500;line-height:1.2;}
-  .meta{margin-top:14px;font-size:24px;font-weight:500;line-height:1.5;white-space:nowrap;display:grid;grid-template-columns:1fr 1fr;}
-  .slots{margin-top:auto;border-top:2.5px solid #000;padding-top:12px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
-  .slot .n{font-size:27px;font-weight:700;}
-  .slot svg{width:74px;height:74px;margin:4px 0 0;}
-  .slot .t{font-size:25px;font-weight:600;line-height:1.25;white-space:nowrap;}
-  .slot .p{font-size:23px;font-weight:600;color:var(--blue);}
+  /* 右欄：天氣，刻意比日期安靜 */
+  .right{flex:1;display:flex;flex-direction:column;padding-left:22px;}
+  .week{display:grid;grid-template-columns:repeat(7,1fr);justify-items:center;row-gap:6px;padding-bottom:14px;border-bottom:2px solid #000;}
+  .week .h{font-size:14px;font-weight:600;letter-spacing:1px;}
+  .week .h.we{color:var(--accent);}
+  .week .d{width:42px;height:42px;line-height:42px;text-align:center;border-radius:50%;font-size:23px;font-weight:500;}
+  .week .d.past{font-weight:300;}
+  .week .d.hol{color:var(--accent);font-weight:700;}
+  .week .d.now{background:var(--accent);color:#fff;font-weight:700;}
+  .wxtop{display:flex;align-items:center;gap:14px;white-space:nowrap;margin-top:14px;}
+  .wxtop svg{width:64px;height:64px;flex:none;margin-left:-6px;}
+  .wxtop .desc{font-size:32px;font-weight:600;}
+  .wxtop .temp{margin-left:auto;font-size:32px;font-weight:300;}
+  .wxtop > div{display:contents;}
+  .meta{margin-top:6px;font-size:17px;font-weight:400;line-height:1.6;white-space:nowrap;display:flex;justify-content:space-between;}
+  .slots{margin-top:auto;height:140px;box-sizing:border-box;border-top:2px solid #000;padding-top:12px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
+  .slot .n{font-size:18px;font-weight:500;letter-spacing:2px;}
+  .slot svg{width:46px;height:46px;margin:4px 0 0;}
+  .slot .t{font-size:21px;font-weight:600;line-height:1.3;white-space:nowrap;}
+  .slot .p{font-size:16px;font-weight:600;color:var(--blue);}
   .slot .p.dry{color:#000;font-weight:400;}
   .foot{margin-top:9px;display:flex;justify-content:space-between;font-size:11px;font-weight:500;letter-spacing:2px;}
 </style></head>
@@ -53,6 +61,7 @@
       </div>
     </div>
     <div class="right">
+      <div class="week">{{week}}</div>
       <div class="wxtop">{{wx_icon}}<div><div class="desc">{{wx_desc}}</div><div class="temp">{{wx_temp}}</div></div></div>
       <div class="meta">{{wx_meta}}</div>
       <div class="slots">{{slots}}</div>

@@ -72,6 +72,18 @@ def dot_grid(d: date) -> str:
     return "".join(out)
 
 
+def week_strip(d: date) -> str:
+    """當週七天（週日開頭）：今天紅底白字，國定假日紅字。"""
+    start = d - timedelta(days=(d.weekday() + 1) % 7)
+    out = [f'<div class="h{" we" if i in (0, 6) else ""}">{c}</div>' for i, c in enumerate("SMTWTFS")]
+    for i in range(7):
+        t = start + timedelta(days=i)
+        h = holiday_info(t)
+        cls = "now" if t == d else ("hol" if h["holiday"] and h["name"] else ("past" if t < d else ""))
+        out.append(f'<div class="d {cls}">{t.day}</div>')
+    return "".join(out)
+
+
 def today_line(d: date, a: dict) -> str:
     h = holiday_info(d)
     parts = []
@@ -103,6 +115,7 @@ def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
         "month_en": MONTH_EN[d.month], "month_zh": MONTH_ZH[d.month],
         "today_line": today_line(d, a),
         "grid": dot_grid(d),
+        "week": week_strip(d),
         "updated": datetime.now(TZ).strftime("%m/%d %H:%M"),
         "theme_css": f":root{{--bg:{bg};--accent:{accent};}}",
     }
