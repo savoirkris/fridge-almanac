@@ -75,6 +75,35 @@ display:
     update_interval: never
     lambda: |-
       it.image(0, 0, id(cal_image));
+      // 電池圖示：畫在底部中間。低於 20% 變紅色。
+      float v = id(battery_voltage).state;
+      if (!isnan(v) && v > 2.5f) {
+        float pct = (v - 3.30f) / (4.15f - 3.30f);
+        if (pct < 0.0f) pct = 0.0f;
+        if (pct > 1.0f) pct = 1.0f;
+        Color c = pct < 0.20f ? Color(255, 0, 0) : Color(0, 0, 0);
+        const int x = 385, y = 453, w = 28, h = 13;
+        it.rectangle(x, y, w, h, c);
+        it.rectangle(x + 1, y + 1, w - 2, h - 2, c);
+        it.filled_rectangle(x + w, y + 4, 3, h - 8, c);
+        int fill = (int) ((w - 6) * pct + 0.5f);
+        if (fill > 0) it.filled_rectangle(x + 3, y + 3, fill, h - 6, c);
+      }
+
+# 電池：GPIO21 開啟量測電路，GPIO1 讀分壓後的電壓（×2）
+output:
+  - platform: gpio
+    pin: GPIO21
+    id: battery_enable
+
+sensor:
+  - platform: adc
+    pin: GPIO1
+    id: battery_voltage
+    attenuation: 12db
+    update_interval: never
+    filters:
+      - multiply: 2.0
 
 deep_sleep:
   id: sleeper
@@ -96,7 +125,13 @@ script:
           condition:
             wifi.connected:
           then:
-            - delay: 4s            # 等 SNTP 對時
+            - output.turn_on: battery_enable
+            - delay: 4s            # 等 SNTP 對時，也讓電池量測電路穩定
+            - component.update: battery_voltage
+            - logger.log:
+                format: "Battery %.2f V"
+                args: ["id(battery_voltage).state"]
+            - output.turn_off: battery_enable
             - component.update: cal_image
           else:
             - logger.log: "No Wi-Fi, sleeping 1h"
