@@ -162,6 +162,7 @@ def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
                  else f'{a["jieqi_next"]} {a["jieqi_next_date"]}')
     ctx["info_l1"] = " · ".join(first)
     ctx["info_l2"] = f'農曆 {a["lunar_month"]}月{a["lunar_day"]}'
+    ctx["num_cls"] = "hol" if h["holiday"] else ""      # 週末與國定假日大數字紅色
     tpl = {"wide": "template_wide.html", "portrait": "template.html"}.get(layout, "template_landscape.html")
     return fill((HERE / tpl).read_text(encoding="utf-8"), ctx)
 

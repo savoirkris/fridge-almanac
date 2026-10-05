@@ -1,17 +1,19 @@
 <!doctype html>
 <html lang="zh-Hant"><head><meta charset="utf-8"><title>日曆</title>
 <style>
-  /* 800×480 橫式：左邊日期、右邊整天天氣。只用電子紙能顯示的黑、白、紅、黃、藍 */
+  /* 800×480 橫式。2×2 格線：上排＝日期｜當週＋今日天氣，下排＝節氣農曆｜整日四時段。
+     下排兩格共用同一條水平線。只用電子紙能顯示的黑、白、紅、黃、藍 */
   :root{--red:#e60012;--yellow:#f5c400;--blue:#0040ff;--ink:#000;--bg:#fff;--accent:#e60012;}
   {{theme_css}}
   html,body{margin:0;width:800px;height:480px;background:var(--bg);color:var(--ink);
     font-family:"Helvetica Neue","Noto Sans TC","PingFang TC",sans-serif;overflow:hidden;}
   .page{box-sizing:border-box;width:800px;height:480px;padding:22px 30px 14px;display:flex;flex-direction:column;}
-  .main{margin:auto 0;display:flex;gap:28px;align-items:stretch;}
-  /* 左欄：日期 */
-  .left{width:322px;display:flex;flex-direction:column;}
+  .main{margin:auto 0;display:grid;grid-template-columns:322px 1fr;column-gap:30px;}
+  /* 上排左：日期 */
+  .date{padding-bottom:20px;}
   .head{display:flex;justify-content:space-between;align-items:flex-end;}
   .num{font-size:204px;font-weight:800;line-height:.84;letter-spacing:-8px;margin-left:-6px;}
+  .num.hol{color:var(--accent);}
   .wd{text-align:right;padding-bottom:8px;}
   .wd .en{font-size:31px;font-weight:400;letter-spacing:1px;}
   .wd .zh{font-size:21px;font-weight:500;margin-top:2px;}
@@ -19,53 +21,57 @@
   .month .en{font-size:27px;font-weight:600;letter-spacing:3px;}
   .month .zh{font-size:22px;font-weight:400;}
   .month .yr{margin-left:auto;font-size:22px;font-weight:400;letter-spacing:2px;}
-  .info{margin-top:22px;border-top:2px solid #000;padding-top:12px;}
-  .info .l1{overflow:hidden;font-size:25px;font-weight:500;line-height:1.4;white-space:nowrap;}
-  .info .l2{overflow:hidden;font-size:17px;font-weight:400;line-height:1.5;white-space:nowrap;margin-top:3px;}
-  .info .hl,.info b{color:var(--accent);font-weight:700;}
-  /* 右欄：天氣，刻意比日期安靜 */
-  .right{flex:1;display:flex;flex-direction:column;padding-left:22px;}
-  .week{display:grid;grid-template-columns:repeat(7,1fr);justify-items:center;row-gap:8px;padding-bottom:16px;border-bottom:2px solid #000;}
+  /* 上排右：當週日期＋今日天氣 */
+  .top{display:flex;flex-direction:column;padding-bottom:20px;}
+  .week{display:grid;grid-template-columns:repeat(7,1fr);justify-items:center;row-gap:8px;padding-bottom:14px;border-bottom:2px solid #000;}
   .week .h{font-size:14px;font-weight:600;letter-spacing:1px;}
   .week .h.we{color:var(--accent);}
   .week .d{width:46px;height:46px;line-height:46px;text-align:center;border-radius:50%;font-size:26px;font-weight:500;}
   .week .d.past{font-weight:300;}
   .week .d.hol{color:var(--accent);font-weight:700;}
   .week .d.now{background:var(--accent);color:#fff;font-weight:700;}
-  .wxtop{display:flex;align-items:center;gap:12px;white-space:nowrap;margin-top:18px;}
-  .wxtop svg{width:48px;height:48px;flex:none;margin-left:-6px;}
-  .wxtop .desc{font-size:24px;font-weight:600;}
-  .wxtop .temp{margin-left:auto;font-size:24px;font-weight:400;}
-  .wxtop > div{display:contents;}
-  .meta{margin-bottom:18px;margin-top:8px;font-size:17px;font-weight:400;line-height:1.6;white-space:nowrap;display:flex;justify-content:space-between;}
-  .slots{margin-top:auto;border-top:2px solid #000;padding-top:14px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
+  .now-wx{margin:auto 0 0;padding-top:16px;display:flex;align-items:center;gap:26px;white-space:nowrap;}
+  .now-wx .ico{text-align:center;flex:none;width:112px;}
+  .now-wx .ico svg{width:60px;height:60px;display:block;margin:0 auto;}
+  .now-wx .ico .temp{font-size:22px;font-weight:600;margin-top:2px;}
+  .now-wx .txt{flex:1;}
+  .now-wx .desc{font-size:25px;font-weight:600;line-height:1.3;}
+  .now-wx .meta{margin-top:6px;font-size:17px;font-weight:400;line-height:1.55;display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:26px;}
+  /* 下排：同一條水平線 */
+  .info,.slots{border-top:2px solid #000;padding-top:14px;}
+  .info .l1{overflow:hidden;font-size:25px;font-weight:500;line-height:1.4;white-space:nowrap;}
+  .info .l2{overflow:hidden;font-size:17px;font-weight:400;line-height:1.5;white-space:nowrap;margin-top:3px;}
+  .info .hl,.info b{color:var(--accent);font-weight:700;}
+  .slots{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
   .slot .n{font-size:18px;font-weight:500;letter-spacing:2px;}
-  .slot svg{width:46px;height:46px;margin:4px 0 0;}
-  .slot .t{font-size:21px;font-weight:600;line-height:1.3;white-space:nowrap;}
+  .slot svg{width:44px;height:44px;margin:3px 0 0;}
+  .slot .t{font-size:21px;font-weight:600;line-height:1.25;white-space:nowrap;}
   .slot .p{font-size:16px;font-weight:600;color:var(--blue);}
   .slot .p.dry{color:#000;font-weight:400;}
-  .foot{margin-top:9px;display:flex;justify-content:space-between;font-size:11px;font-weight:500;letter-spacing:2px;}
+  .foot{display:flex;justify-content:space-between;font-size:11px;font-weight:500;letter-spacing:2px;}
 </style></head>
 <body><div class="page">
   <div class="main">
-    <div class="left">
+    <div class="date">
       <div class="head">
-        <div class="num">{{day}}</div>
+        <div class="num {{num_cls}}">{{day}}</div>
         <div class="wd"><div class="en">{{wd_en}}</div><div class="zh">{{wd_zh}}</div></div>
       </div>
       <div class="month"><span class="en">{{month_en}}</span><span class="zh">{{month_zh}}月</span><span class="yr">{{year}}</span></div>
-      <div class="info">
-        <div class="l1">{{info_l1}}</div>
-        <div class="l1">{{info_l2}}</div>
-        <div class="l2">{{next_hol}}</div>
+    </div>
+    <div class="top">
+      <div class="week">{{week}}</div>
+      <div class="now-wx">
+        <div class="ico">{{wx_icon}}<div class="temp">{{wx_temp}}</div></div>
+        <div class="txt"><div class="desc">{{wx_desc}}</div><div class="meta">{{wx_meta}}</div></div>
       </div>
     </div>
-    <div class="right">
-      <div class="week">{{week}}</div>
-      <div class="wxtop">{{wx_icon}}<div><div class="desc">{{wx_desc}}</div><div class="temp">{{wx_temp}}</div></div></div>
-      <div class="meta">{{wx_meta}}</div>
-      <div class="slots">{{slots}}</div>
+    <div class="info">
+      <div class="l1">{{info_l1}}</div>
+      <div class="l1">{{info_l2}}</div>
+      <div class="l2">{{next_hol}}</div>
     </div>
+    <div class="slots">{{slots}}</div>
   </div>
   <div class="foot"><span>高雄 · 天氣 {{wx_src}}</span><span>更新 {{updated}}</span></div>
 </div></body></html>
