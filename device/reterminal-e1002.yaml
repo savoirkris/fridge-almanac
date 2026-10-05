@@ -1,24 +1,22 @@
-# reTerminal E1002 的 ESPHome 設定（草稿，機器到貨後再實測）
-# 行為：開機 → 連 Wi-Fi → 抓雲端的 device.png（800×480，六色）→ 顯示 → 深度睡眠 6 小時
-#
-# 腳位與面板設定請以 Seeed 官方文件為準，貼進 display 區塊：
-#   https://wiki.seeedstudio.com/reterminal_e10xx_with_esphome/
-#   https://wiki.seeedstudio.com/reterminal_e10xx_with_esphome_advanced/   （電池、深度睡眠）
-# 需要 ESPHome 2025.11.1 以上。
+# reTerminal E1002 冰箱日曆韌體（ESPHome 2025.11.1 以上）
+# 行為：醒來 → 連 Wi-Fi → 抓雲端的 device.png（800×480 六色）→ 顯示 → 深度睡眠到下一個時段
+# Wi-Fi 帳密不寫在這裡：刷機後用 web.esphome.io（Improv）或手機連「Fridge-Calendar」熱點設定。
+# 右側白色按鈕（GPIO4）可隨時喚醒並立即更新。
 
 substitutions:
   image_url: "https://savoirkris.github.io/fridge-almanac/device.png"
 
 esphome:
   name: fridge-calendar
-  friendly_name: 冰箱日曆
+  friendly_name: Fridge Calendar
   on_boot:
     priority: -100
     then:
-      - component.update: cal_image
+      - script.execute: main_flow
 
 esp32:
   board: esp32-s3-devkitc-1
+  flash_size: 16MB
   framework:
     type: esp-idf
 
@@ -27,28 +25,42 @@ psram:
   speed: 80MHz
 
 logger:
+  level: INFO
 
 wifi:
-  ssid: !secret wifi_ssid          # 只能用 2.4GHz
-  password: !secret wifi_password
-  power_save_mode: none
+  ap:
+    ssid: "Fridge-Calendar"
+
+captive_portal:
+
+improv_serial:
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Asia/Taipei
 
 http_request:
   verify_ssl: false
+  timeout: 30s
+
+spi:
+  clk_pin: GPIO7
+  mosi_pin: GPIO9
 
 online_image:
   - id: cal_image
     url: ${image_url}
     format: PNG
     type: RGB565
-    resize: 800x480
     update_interval: never
     on_download_finished:
+      - logger.log: "Image downloaded, refreshing panel"
       - component.update: epd
-      - delay: 25s                 # 等彩色面板刷新完成
-      - deep_sleep.enter: sleeper
+      - delay: 45s                 # 彩色面板刷新要十幾秒，留足時間
+      - script.execute: go_sleep
     on_error:
-      - logger.log: "抓圖失敗，保留舊畫面，睡 1 小時後再試"
+      - logger.log: "Image download failed, keeping old picture"
       - deep_sleep.enter:
           id: sleeper
           sleep_duration: 1h
@@ -57,12 +69,50 @@ display:
   - platform: epaper_spi
     id: epd
     model: Seeed-reTerminal-E1002
-    # cs_pin / dc_pin / reset_pin / busy_pin / spi 設定：照官方文件填
     update_interval: never
     lambda: |-
       it.image(0, 0, id(cal_image));
 
 deep_sleep:
   id: sleeper
-  run_duration: 120s               # 最多醒 2 分鐘，抓不到圖也會去睡
-  sleep_duration: 6h
+  wakeup_pin:
+    number: GPIO4
+    inverted: true
+    mode:
+      input: true
+      pullup: true
+
+script:
+  - id: main_flow
+    then:
+      - wait_until:
+          condition:
+            wifi.connected:
+          timeout: 300s            # 沒設定 Wi-Fi 時醒著 5 分鐘讓人設定
+      - if:
+          condition:
+            wifi.connected:
+          then:
+            - delay: 4s            # 等 SNTP 對時
+            - component.update: cal_image
+          else:
+            - logger.log: "No Wi-Fi, sleeping 1h"
+            - deep_sleep.enter:
+                id: sleeper
+                sleep_duration: 1h
+
+  # 睡到下一個時段：01:30、06:30、12:30、18:30（台灣時間）
+  - id: go_sleep
+    then:
+      - deep_sleep.enter:
+          id: sleeper
+          sleep_duration: !lambda |-
+            auto now = id(sntp_time).now();
+            if (!now.is_valid()) return 6 * 3600 * 1000;
+            int secs = now.hour * 3600 + now.minute * 60 + now.second;
+            const int slots[] = {1 * 3600 + 1800, 6 * 3600 + 1800, 12 * 3600 + 1800, 18 * 3600 + 1800};
+            int best = 24 * 3600 + slots[0] - secs;
+            for (int s : slots) {
+              if (s - secs > 600) { best = s - secs; break; }
+            }
+            return (uint32_t) best * 1000;

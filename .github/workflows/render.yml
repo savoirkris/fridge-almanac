@@ -2,11 +2,8 @@ name: 每日出圖
 
 on:
   schedule:
-    # UTC 時間。對應台灣 00:10、06:10、12:10、18:10
-    - cron: "10 16 * * *"
-    - cron: "10 22 * * *"
-    - cron: "10 4 * * *"
-    - cron: "10 10 * * *"
+    # 每小時一次。GitHub 排程常延遲一兩個小時，跑勤一點才能確保過午夜後很快有新圖
+    - cron: "5 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -37,3 +34,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
           keep_files: false
+          force_orphan: true
