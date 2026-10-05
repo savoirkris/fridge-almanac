@@ -143,7 +143,7 @@ def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
             slots.append(f'<div class="slot"><div class="n">{s["name"]}</div><div class="hrs">{s["hours"]}</div>'
                          f'{svg(s["icon"])}<div class="t">{rng(s["tmin"], s["tmax"])}</div>'
                          f'<div class="p {dry}">{s["pop"]}%</div></div>')
-        ctx.update({"wx_icon": svg(t["icon"]), "wx_desc": t["desc"], "wx_temp": rng(t["tmin"], t["tmax"], "°C"),
+        ctx.update({"wx_icon": svg(t["icon"], tight=(layout == "wide")), "wx_desc": t["desc"], "wx_temp": rng(t["tmin"], t["tmax"], "°C"),
                     "wx_meta": "".join(f"<span>{m}</span>" for m in meta) if layout == "wide" else "<br>".join(meta), "slots": "".join(slots), "wx_src": w["source"]})
     else:
         ctx.update({"wx_icon": "", "wx_desc": "天氣暫無資料", "wx_temp": "", "wx_meta": "", "slots": "", "wx_src": "—"})

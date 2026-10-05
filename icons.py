@@ -24,5 +24,15 @@ ICONS = {
 }
 
 
-def svg(kind: str) -> str:
-    return f'<svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg">{ICONS.get(kind, _CLOUD)}</svg>'
+# 每種圖示實際圖形的範圍（x, y, 寬, 高），給需要「貼齊文字高度」的大圖示用
+TIGHT = {
+    "sun": (5, 5, 54, 54), "partly": (6, -4, 55, 58), "cloudy": (6, 14, 55, 40), "overcast": (6, 14, 55, 40),
+    "fog": (11, 24, 42, 28), "drizzle": (6, 14, 55, 49), "rain": (6, 14, 55, 51), "thunder": (6, 14, 55, 55),
+    "snow": (6, 14, 55, 49),
+}
+
+
+def svg(kind: str, tight: bool = False) -> str:
+    box = TIGHT.get(kind, TIGHT["cloudy"]) if tight else (0, 0, 64, 68)
+    vb = " ".join(str(v) for v in box)
+    return f'<svg viewBox="{vb}" xmlns="http://www.w3.org/2000/svg">{ICONS.get(kind, _CLOUD)}</svg>'
