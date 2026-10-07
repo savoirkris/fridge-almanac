@@ -24,7 +24,9 @@ def _from_ics(url: str) -> list:
     out = []
     for ev in cal.walk("VEVENT"):
         title = str(ev.get("SUMMARY", ""))
-        if "生日" not in title and "🎂" not in title:
+        bare = re.sub(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\s!！]", "", title)
+        # 只收「某某的生日」「某某生日」「生日快樂」這種，排除「生日聚餐」之類的活動
+        if not (bare.endswith("生日") or bare == "生日快樂"):
             continue
         start = ev.get("DTSTART").dt
         if isinstance(start, datetime):
