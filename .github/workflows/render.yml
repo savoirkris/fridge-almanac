@@ -26,6 +26,7 @@ jobs:
       - name: 產生圖片
         env:
           CWA_API_KEY: ${{ secrets.CWA_API_KEY }}
+          CAL_ICS_URL: ${{ secrets.CAL_ICS_URL }}
           TZ: Asia/Taipei
         run: python render.py
       - name: 發佈到 GitHub Pages

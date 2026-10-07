@@ -10,7 +10,8 @@ from PIL import Image
 from almanac import almanac
 from weather import weather
 from holidays import info as holiday_info, next_holiday
-from icons import svg
+from icons import svg, CAKE
+from events import on_date as birthdays_on, upcoming as next_birthday
 
 HERE = Path(__file__).parent
 OUT = HERE / "out"
@@ -80,7 +81,8 @@ def week_strip(d: date) -> str:
         t = start + timedelta(days=i)
         h = holiday_info(t)
         cls = "now" if t == d else ("hol" if h["holiday"] else ("past" if t < d else ""))   # 週末與國定假日都紅字
-        out.append(f'<div class="d {cls}">{t.day}</div>')
+        cake = CAKE if birthdays_on(t) else ""
+        out.append(f'<div class="d {cls}">{cake}{t.day}</div>')
     return "".join(out)
 
 
@@ -149,6 +151,10 @@ def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
         ctx.update({"wx_icon": "", "wx_desc": "天氣暫無資料", "wx_temp": "", "wx_meta": "", "slots": "", "wx_src": "—"})
     nh = next_holiday(d)
     ctx["next_hol"] = (f'下個假日 <b>{nh[1]}</b> {nh[0].month}/{nh[0].day} · {nh[2]} 天後' if nh else "")
+    nb = next_birthday(d, 7)                          # 一週內有生日就優先顯示
+    if nb:
+        when = "今天" if nb[2] == 0 else ("明天" if nb[2] == 1 else f"{nb[1].month}/{nb[1].day} · {nb[2]} 天後")
+        ctx["next_hol"] = f'{CAKE}<b>{nb[0]} 生日</b> · {when}'
     ctx["body_cls"] = "nodots" if layout == "landscape-nodots" else ""
     # wide 版左欄：第一行節日／節氣，第二行農曆
     h = holiday_info(d)

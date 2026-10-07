@@ -36,3 +36,9 @@ def svg(kind: str, tight: bool = False) -> str:
     box = TIGHT.get(kind, TIGHT["cloudy"]) if tight else (0, 0, 64, 68)
     vb = " ".join(str(v) for v in box)
     return f'<svg viewBox="{vb}" xmlns="http://www.w3.org/2000/svg">{ICONS.get(kind, _CLOUD)}</svg>'
+
+
+# 生日蛋糕（小圖示，紅色線條）
+CAKE = ('<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#e60012" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+        '<path d="M4 20h16v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2z"/><path d="M4 16c1.5 0 1.5 1.2 3 1.2S8.5 16 10 16s1.5 1.2 3 1.2S14.5 16 16 16s1.5 1.2 3 1.2S20.5 16 20 16"/>'
+        '<path d="M12 12V8"/><path d="M12 8c-1.2-1-1.2-2.4 0-3.5 1.2 1.1 1.2 2.5 0 3.5z" fill="#f5c400"/></svg>')

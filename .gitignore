@@ -8,3 +8,5 @@ __pycache__/
 firmware/
 backup/
 serial.log
+birthdays.json
+events_cache.json
