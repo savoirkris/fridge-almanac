@@ -127,7 +127,11 @@ script:
             wifi.connected:
           then:
             - output.turn_on: battery_enable
-            - delay: 4s            # 等 SNTP 對時，也讓電池量測電路穩定
+            - wait_until:          # 等 SNTP 對時完成（最多 20 秒），日期與睡眠時間都靠它
+                condition:
+                  time.has_time:
+                timeout: 20s
+            - delay: 1s            # 讓電池量測電路穩定
             - component.update: battery_voltage
             - logger.log:
                 format: "Battery %.2f V"
@@ -142,8 +146,9 @@ script:
                   if (!now.is_valid()) return std::string("${image_base}/device.png");
                   char buf[96];
                   snprintf(buf, sizeof(buf), "${image_base}/device-%04d-%02d-%02d.png", now.year, now.month, now.day_of_month);
+                  ESP_LOGI("main", "Now %04d-%02d-%02d %02d:%02d, fetching %s", now.year, now.month, now.day_of_month, now.hour, now.minute, buf);
                   return std::string(buf);
-            - component.update: cal_image
+            # set_url 會自己開始下載，不必再呼叫 component.update
           else:
             - logger.log: "No Wi-Fi, sleeping 1h"
             - deep_sleep.enter:
@@ -153,6 +158,9 @@ script:
   # 睡到下一個時段：01:30、06:30、12:30、18:30（台灣時間）
   - id: go_sleep
     then:
+      - lambda: |-
+          auto now = id(sntp_time).now();
+          ESP_LOGI("main", "Sleep calc at %02d:%02d (valid=%d)", now.hour, now.minute, now.is_valid());
       - deep_sleep.enter:
           id: sleeper
           sleep_duration: !lambda |-
