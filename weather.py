@@ -3,7 +3,7 @@
 抓失敗時沿用上次快取，並標記是舊資料。
 """
 import json, os, time
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 import requests
 
@@ -102,7 +102,8 @@ def weather(d: date) -> dict:
     try:
         w = _open_meteo(d)
         key = os.environ.get("CWA_API_KEY")
-        if key:
+        from zoneinfo import ZoneInfo
+        if key and d == datetime.now(ZoneInfo("Asia/Taipei")).date():   # 氣象署 36 小時預報只套用在今天那張
             try:
                 hl = _cwa_headline(key)
                 w["today"]["desc"] = hl["desc"]
