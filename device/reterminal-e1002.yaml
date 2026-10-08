@@ -4,7 +4,7 @@
 # 綠色重新整理鍵（GPIO3）可隨時喚醒並立即更新。
 
 substitutions:
-  image_url: "https://savoirkris.github.io/fridge-almanac/device.png"
+  image_base: "https://savoirkris.github.io/fridge-almanac"
 
 esphome:
   name: fridge-calendar
@@ -53,7 +53,7 @@ spi:
 
 online_image:
   - id: cal_image
-    url: ${image_url}
+    url: ${image_base}/device.png
     format: PNG
     type: RGB565
     update_interval: never
@@ -134,6 +134,15 @@ script:
                 level: INFO
                 args: ["id(battery_voltage).state"]
             - output.turn_off: battery_enable
+            # 依今天日期抓圖（雲端預先做好今天、明天、後天），對不到時間就抓固定檔名
+            - online_image.set_url:
+                id: cal_image
+                url: !lambda |-
+                  auto now = id(sntp_time).now();
+                  if (!now.is_valid()) return std::string("${image_base}/device.png");
+                  char buf[96];
+                  snprintf(buf, sizeof(buf), "${image_base}/device-%04d-%02d-%02d.png", now.year, now.month, now.day_of_month);
+                  return std::string(buf);
             - component.update: cal_image
           else:
             - logger.log: "No Wi-Fi, sleeping 1h"

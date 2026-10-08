@@ -9,9 +9,15 @@ on:
 permissions:
   contents: write
 
+# 同時只跑一個；新的排程進來就取消還在跑的舊的，不會被卡住的那次擋住
+concurrency:
+  group: render
+  cancel-in-progress: true
+
 jobs:
   render:
     runs-on: ubuntu-latest
+    timeout-minutes: 12          # 套件伺服器沒回應就放棄，等下一小時
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,8 +25,8 @@ jobs:
           python-version: "3.12"
       - name: 安裝中文字型與 Chrome
         run: |
-          sudo apt-get update -q
-          sudo apt-get install -y -q fonts-noto-cjk
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 update -q
+          sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 install -y -q fonts-noto-cjk
           echo "CHROME_BIN=$(which google-chrome)" >> "$GITHUB_ENV"
       - run: pip install -r requirements.txt
       - name: 產生圖片
@@ -28,7 +34,7 @@ jobs:
           CWA_API_KEY: ${{ secrets.CWA_API_KEY }}
           CAL_ICS_URL: ${{ secrets.CAL_ICS_URL }}
           TZ: Asia/Taipei
-        run: python render.py
+        run: python render.py --days 3     # 今天、明天、後天各一張
       - name: 發佈到 GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:

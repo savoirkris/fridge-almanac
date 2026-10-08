@@ -208,23 +208,31 @@ def to_eink(src: Path, dst: Path, dither: bool = False) -> None:
 
 
 def main():
-    """用法：render.py [YYYY-MM-DD] [--theme classic|orange|beige]"""
+    """用法：render.py [YYYY-MM-DD] [--theme classic|orange|beige] [--layout wide|portrait] [--days N]"""
     argv = sys.argv[1:]
     theme = argv[argv.index("--theme") + 1] if "--theme" in argv else "classic"
-    args = [x for x in argv if not x.startswith("--") and x not in THEMES and x not in ("wide", "landscape", "landscape-nodots", "portrait")]
+    layout = argv[argv.index("--layout") + 1] if "--layout" in argv else "wide"
+    days = int(argv[argv.index("--days") + 1]) if "--days" in argv else 1
+    skip = set()
+    for flag in ("--theme", "--layout", "--days"):
+        if flag in argv:
+            skip.add(argv[argv.index(flag) + 1])
+    args = [x for x in argv if not x.startswith("--") and x not in skip]
     d = date.fromisoformat(args[0]) if args else datetime.now(TZ).date()
     OUT.mkdir(exist_ok=True)
-    layout = argv[argv.index("--layout") + 1] if "--layout" in argv else "wide"
-    html = build_html(d, theme, layout)
-    (OUT / "calendar.html").write_text(html, encoding="utf-8")
-    screenshot(html, OUT / "calendar.png", size=(480, 800) if layout == "portrait" else (800, 480))
-    to_eink(OUT / "calendar.png", OUT / "calendar_eink.png", dither=(theme != "classic"))
-    # 機器用：轉成 800×480 橫向、只含六色的 PNG
-    dev = Image.open(OUT / "calendar_eink.png")
-    if layout == "portrait":                       # 直式版面要轉 90 度才符合面板
-        dev = dev.rotate(ROTATE, expand=True)
-    dev.save(OUT / "device.png", optimize=True)
-    print("ok", d, theme, OUT / "calendar.png")
+    for i in range(days):
+        t = d + timedelta(days=i)
+        html = build_html(t, theme, layout)
+        (OUT / "calendar.html").write_text(html, encoding="utf-8")
+        screenshot(html, OUT / "calendar.png", size=(480, 800) if layout == "portrait" else (800, 480))
+        to_eink(OUT / "calendar.png", OUT / "calendar_eink.png", dither=(theme != "classic"))
+        dev = Image.open(OUT / "calendar_eink.png")
+        if layout == "portrait":                   # 直式版面要轉 90 度才符合面板
+            dev = dev.rotate(ROTATE, expand=True)
+        dev.save(OUT / f"device-{t.isoformat()}.png", optimize=True)   # 機器依日期抓
+        if i == 0:
+            dev.save(OUT / "device.png", optimize=True)                 # 固定檔名：今天
+        print("ok", t, theme)
 
 
 if __name__ == "__main__":

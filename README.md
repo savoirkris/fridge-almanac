@@ -29,6 +29,13 @@ DEVICE_ROTATE=270 ./.venv/bin/python render.py     # 機器反過來掛時改轉
 
 抓不到天氣時沿用快取並標示舊資料；機器抓不到圖時保留上一張。
 
+## 可靠性
+
+GitHub 的排程常延遲數小時，偶爾卡住或 Pages 發佈失敗。對策：
+- 每次出圖做今天、明天、後天三張（`--days 3`），檔名 `device-YYYY-MM-DD.png`；機器依自己的日期抓，排程晚了日期也不會錯。
+- 工作流程 12 分鐘逾時，新排程會取消卡住的舊的。
+- `device.png` 固定是今天，給舊韌體用。
+
 ## 生日
 
 來源是 Google 日曆「個人」的私人 iCal 網址（環境變數 `CAL_ICS_URL`，GitHub 上放 Secrets，本機放 `.env`）。
