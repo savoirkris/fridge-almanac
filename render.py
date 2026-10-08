@@ -223,10 +223,11 @@ def main():
     for i in range(days):
         t = d + timedelta(days=i)
         html = build_html(t, theme, layout)
-        (OUT / "calendar.html").write_text(html, encoding="utf-8")
-        screenshot(html, OUT / "calendar.png", size=(480, 800) if layout == "portrait" else (800, 480))
-        to_eink(OUT / "calendar.png", OUT / "calendar_eink.png", dither=(theme != "classic"))
-        dev = Image.open(OUT / "calendar_eink.png")
+        tag = "" if i == 0 else f"-{t.isoformat()}"            # 今天用固定檔名，其他天加日期
+        (OUT / f"calendar{tag}.html").write_text(html, encoding="utf-8")
+        screenshot(html, OUT / f"calendar{tag}.png", size=(480, 800) if layout == "portrait" else (800, 480))
+        to_eink(OUT / f"calendar{tag}.png", OUT / f"calendar_eink{tag}.png", dither=(theme != "classic"))
+        dev = Image.open(OUT / f"calendar_eink{tag}.png")
         if layout == "portrait":                   # 直式版面要轉 90 度才符合面板
             dev = dev.rotate(ROTATE, expand=True)
         dev.save(OUT / f"device-{t.isoformat()}.png", optimize=True)   # 機器依日期抓
