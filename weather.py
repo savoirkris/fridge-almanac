@@ -46,6 +46,7 @@ def _open_meteo(d: date) -> dict:
         params={"latitude": LAT, "longitude": LON, "timezone": "Asia/Taipei",
                 "start_date": d.isoformat(), "end_date": (d.fromordinal(d.toordinal() + 6)).isoformat(),
                 "hourly": "temperature_2m,precipitation_probability,weather_code",
+                "current": "temperature_2m,weather_code,apparent_temperature",
                 "daily": "weather_code,temperature_2m_max,temperature_2m_min,"
                          "precipitation_probability_max,sunrise,sunset,uv_index_max"},
         timeout=TIMEOUT)
@@ -71,7 +72,12 @@ def _open_meteo(d: date) -> dict:
                      "tmax": round(dy["temperature_2m_max"][i]), "tmin": round(dy["temperature_2m_min"][i]),
                      "pop": dy["precipitation_probability_max"][i]})
     today = days[0]
-    return {"today": {**today, "sunrise": dy["sunrise"][0][11:], "sunset": dy["sunset"][0][11:],
+    cur = j.get("current") or {}
+    ccode = _code(cur.get("weather_code", dy["weather_code"][0]))
+    current = {"temp": round(cur["temperature_2m"]) if "temperature_2m" in cur else None,
+               "feels": round(cur["apparent_temperature"]) if "apparent_temperature" in cur else None,
+               "desc": ccode[0], "icon": ccode[1], "time": (cur.get("time") or "")[11:16]}
+    return {"current": current, "today": {**today, "sunrise": dy["sunrise"][0][11:], "sunset": dy["sunset"][0][11:],
                       "uv": round(dy["uv_index_max"][0]), "uv_level": uv_level(dy["uv_index_max"][0])},
             "slots": slots, "days": days, "source": "Open-Meteo"}
 

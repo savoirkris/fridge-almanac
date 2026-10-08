@@ -15,7 +15,7 @@ ICONS = {
     "sun": _SUN,
     "partly": _SMALLSUN + _CLOUD,
     "cloudy": _CLOUD,
-    "overcast": _CLOUD_DARK,
+    "overcast": '<g transform="translate(9 -9) scale(.72)">' + _CLOUD + '</g>' + _CLOUD,   # 兩朵描邊雲，不用整塊黑
     "fog": _FOG,
     "drizzle": _CLOUD + _DRIZZLE,
     "rain": _CLOUD + _DROPS,

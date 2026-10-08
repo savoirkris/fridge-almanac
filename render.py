@@ -126,8 +126,14 @@ def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
         meta = [f'降雨 {t["pop"]}%', f'紫外線 {t["uv_level"]}', f'日出 {t["sunrise"]} · 日落 {t["sunset"]}']
         if w["stale"]:
             meta.append(f'舊資料 {w["fetched_at"][5:]}')
+        cur = w.get("current") or {}
+        use_now = layout == "wide" and d == datetime.now(TZ).date() and cur.get("temp") is not None
         if layout == "wide":                       # 天氣在右欄：2×2 小格
-            meta = [f'降雨 {t["pop"]}%', f'紫外線 {t["uv_level"]}', f'日出 {t["sunrise"]}', f'日落 {t["sunset"]}']
+            if use_now:                            # 今天：大字是現在，小字補整天範圍與體感
+                meta = [f'今日 {rng(t["tmin"], t["tmax"])} · 降雨 {t["pop"]}%', f'紫外線 {t["uv_level"]}',
+                        f'日出 {t["sunrise"]} · 日落 {t["sunset"]}', f'體感 {cur["feels"]}°' if cur.get("feels") is not None else ""]
+            else:                                  # 明後天：整天預報
+                meta = [f'降雨 {t["pop"]}%', f'紫外線 {t["uv_level"]}', f'日出 {t["sunrise"]} · 日落 {t["sunset"]}', ""]
             if w["stale"]:
                 meta[1] = f'舊資料 {w["fetched_at"][5:10]}'
         elif layout.startswith("landscape"):        # 橫式：放大成兩行
@@ -145,7 +151,11 @@ def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
             slots.append(f'<div class="slot"><div class="n">{s["name"]}</div><div class="hrs">{s["hours"]}</div>'
                          f'{svg(s["icon"])}<div class="t">{rng(s["tmin"], s["tmax"])}</div>'
                          f'<div class="p {dry}">{s["pop"]}%</div></div>')
-        ctx.update({"wx_icon": svg(t["icon"], tight=(layout == "wide")), "wx_desc": t["desc"], "wx_temp": rng(t["tmin"], t["tmax"], "°C"),
+        # 橫式大區塊顯示「現在」的天氣（今天的圖才有現在；明後天仍用整天預報）
+        head_icon = cur["icon"] if use_now else t["icon"]
+        head_desc = cur["desc"] if use_now else t["desc"]
+        head_temp = f'{cur["temp"]}°C' if use_now else rng(t["tmin"], t["tmax"], "°C")
+        ctx.update({"wx_icon": svg(head_icon, tight=(layout == "wide")), "wx_desc": head_desc, "wx_temp": head_temp,
                     "wx_meta": "".join(f"<span>{m}</span>" for m in meta) if layout == "wide" else "<br>".join(meta), "slots": "".join(slots), "wx_src": w["source"]})
     else:
         ctx.update({"wx_icon": "", "wx_desc": "天氣暫無資料", "wx_temp": "", "wx_meta": "", "slots": "", "wx_src": "—"})
