@@ -15,7 +15,7 @@ ICONS = {
     "sun": _SUN,
     "partly": _SMALLSUN + _CLOUD,
     "cloudy": _CLOUD,
-    "overcast": '<g transform="translate(22 -13) scale(.58)">' + _CLOUD + '</g>' + _CLOUD,   # 前後兩朵描邊雲，不用整塊黑
+    "overcast": '<g transform="translate(28 -8) scale(.55)">' + _CLOUD + '</g>' + _CLOUD,   # 右上一朵小雲加前面大雲
     "fog": _FOG,
     "drizzle": _CLOUD + _DRIZZLE,
     "rain": _CLOUD + _DROPS,
@@ -26,7 +26,7 @@ ICONS = {
 
 # 每種圖示實際圖形的範圍（x, y, 寬, 高），給需要「貼齊文字高度」的大圖示用
 TIGHT = {
-    "sun": (5, 5, 54, 54), "partly": (6, -4, 55, 58), "cloudy": (6, 14, 55, 40), "overcast": (6, 14, 55, 40),
+    "sun": (5, 5, 54, 54), "partly": (6, -4, 55, 58), "cloudy": (6, 14, 55, 40), "overcast": (6, 0, 57, 54),
     "fog": (11, 24, 42, 28), "drizzle": (6, 14, 55, 49), "rain": (6, 14, 55, 51), "thunder": (6, 14, 55, 55),
     "snow": (6, 14, 55, 49),
 }
