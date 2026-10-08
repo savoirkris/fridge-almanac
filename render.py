@@ -133,7 +133,7 @@ def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
                 meta = [f'今日 {rng(t["tmin"], t["tmax"])} · 降雨 {t["pop"]}%', f'紫外線 {t["uv_level"]}',
                         f'日出 {t["sunrise"]} · 日落 {t["sunset"]}', f'體感 {cur["feels"]}°' if cur.get("feels") is not None else ""]
             else:                                  # 明後天：整天預報
-                meta = [f'降雨 {t["pop"]}%', f'紫外線 {t["uv_level"]}', f'日出 {t["sunrise"]} · 日落 {t["sunset"]}', ""]
+                meta = [f'降雨 {t["pop"]}% · 紫外線 {t["uv_level"]}', "", f'日出 {t["sunrise"]} · 日落 {t["sunset"]}', ""]
             if w["stale"]:
                 meta[1] = f'舊資料 {w["fetched_at"][5:10]}'
         elif layout.startswith("landscape"):        # 橫式：放大成兩行
