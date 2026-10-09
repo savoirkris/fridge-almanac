@@ -52,6 +52,6 @@ GitHub 的排程常延遲數小時，偶爾卡住或 Pages 發佈失敗。對策
 
 - TRMNL 韌體在 E1002 上只有黑白模式，所以不走 TRMNL，用 ESPHome。
 - 只支援 2.4GHz Wi-Fi。
-- 預設版面是 `wide`（`template_wide.html`）：橫式 800×480，左邊日期、節氣、農曆、下個假日，右邊整天天氣。另有 `--layout landscape`（含圓點月曆）、`landscape-nodots`。要直式加 `--layout portrait`，圖片會轉 90 度，方向用 `DEVICE_ROTATE` 調。
+- 預設版面是 `wide`（`template_wide.html`）：橫式 800×480，左邊日期、節氣、農曆、下個假日，右上整月日曆（今天紅底、週末假日紅字、生日蛋糕），右下整天四時段天氣。另有 `--layout landscape`（含圓點月曆）、`landscape-nodots`。要直式加 `--layout portrait`，圖片會轉 90 度，方向用 `DEVICE_ROTATE` 調。
 - 黃色在電子紙上對比很低，圖示一律黑色描邊、黃色只當填色。
 - 綠色重新整理鍵可喚醒並立即更新；平常每天 05:30、12:30 自動更新（一天兩次，省電）。

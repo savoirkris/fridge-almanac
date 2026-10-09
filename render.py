@@ -86,6 +86,20 @@ def week_strip(d: date) -> str:
     return "".join(out)
 
 
+def month_grid(d: date) -> str:
+    """整月日曆（週日開頭）：今天紅底白字，週末與假日紅字，生日有蛋糕，過去的日子細字。"""
+    out = [f'<div class="h{" we" if i in (0, 6) else ""}">{c}</div>' for i, c in enumerate("SMTWTFS")]
+    first = (date(d.year, d.month, 1).weekday() + 1) % 7
+    out += ['<div class="d empty"></div>'] * first
+    for day in range(1, calendar.monthrange(d.year, d.month)[1] + 1):
+        t = date(d.year, d.month, day)
+        h = holiday_info(t)
+        cls = "now" if t == d else ("hol" if h["holiday"] else ("past" if t < d else ""))
+        cake = CAKE if birthdays_on(t) else ""
+        out.append(f'<div class="d {cls}">{cake}{day}</div>')
+    return "".join(out)
+
+
 def today_line(d: date, a: dict) -> str:
     h = holiday_info(d)
     parts = []
@@ -118,6 +132,7 @@ def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
         "today_line": today_line(d, a),
         "grid": dot_grid(d),
         "week": week_strip(d),
+        "month_grid": month_grid(d),
         "updated": datetime.now(TZ).strftime("%m/%d %H:%M"),
         "theme_css": f":root{{--bg:{bg};--accent:{accent};}}",
     }
@@ -155,10 +170,11 @@ def build_html(d: date, theme: str = "classic", layout: str = "wide") -> str:
         head_icon = cur["icon"] if use_now else t["icon"]
         head_desc = cur["desc"] if use_now else t["desc"]
         head_temp = f'{cur["temp"]}°C' if use_now else rng(t["tmin"], t["tmax"], "°C")
+        ctx["wx_day"] = f'日出 {t["sunrise"]} · 日落 {t["sunset"]} · 紫外線 {t["uv_level"]}'
         ctx.update({"wx_icon": svg(head_icon, tight=(layout == "wide")), "wx_desc": head_desc, "wx_temp": head_temp,
                     "wx_meta": "".join(f"<span>{m}</span>" for m in meta) if layout == "wide" else "<br>".join(meta), "slots": "".join(slots), "wx_src": w["source"]})
     else:
-        ctx.update({"wx_icon": "", "wx_desc": "天氣暫無資料", "wx_temp": "", "wx_meta": "", "slots": "", "wx_src": "—"})
+        ctx.update({"wx_icon": "", "wx_desc": "天氣暫無資料", "wx_temp": "", "wx_meta": "", "slots": "", "wx_src": "—", "wx_day": ""})
     nh = next_holiday(d)
     ctx["next_hol"] = (f'下個假日 <b>{nh[1]}</b> {nh[0].month}/{nh[0].day} · {nh[2]} 天後' if nh else "")
     nb = next_birthday(d, 7)                          # 一週內有生日就優先顯示

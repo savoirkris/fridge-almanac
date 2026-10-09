@@ -21,25 +21,17 @@
   .month .en{font-size:27px;font-weight:600;letter-spacing:3px;}
   .month .zh{font-size:22px;font-weight:400;}
   .month .yr{margin-left:auto;font-size:22px;font-weight:400;letter-spacing:2px;}
-  /* 上排右：當週日期＋今日天氣 */
-  .top{display:flex;flex-direction:column;padding-bottom:20px;}
-  .week{display:grid;grid-template-columns:repeat(7,1fr);justify-items:center;row-gap:14px;padding-bottom:14px;border-bottom:2px solid #000;}
-  .week .h{font-size:14px;font-weight:600;letter-spacing:1px;}
-  .week .h.we{color:var(--accent);}
-  .week .d{width:46px;height:46px;line-height:46px;text-align:center;border-radius:50%;font-size:26px;font-weight:500;}
-  .week .d.past{font-weight:300;}
-  .week .d.hol{color:var(--accent);font-weight:700;}
-  .week .d.now{background:var(--accent);color:#fff;font-weight:700;}
-  .week .d{position:relative;}
-  .week .d svg{position:absolute;left:50%;top:-14px;width:16px;height:16px;margin-left:-8px;}
-  .now-wx{margin:auto 0 0;padding-top:16px;display:flex;align-items:stretch;gap:22px;white-space:nowrap;}
-  .now-wx .ico{flex:none;display:flex;align-items:center;padding:6px 0 5px;}   /* 上下內縮到文字的字面高度 */
-  .now-wx .ico svg{height:100%;width:auto;max-width:120px;display:block;}
-  .now-wx .txt{flex:1;}
-  .now-wx .line{display:flex;align-items:baseline;gap:16px;}
-  .now-wx .desc{font-size:25px;font-weight:600;line-height:1.3;}
-  .now-wx .temp{font-size:25px;font-weight:400;}
-  .now-wx .meta{margin-top:6px;font-size:17px;font-weight:400;line-height:1.55;display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:26px;}
+  /* 上排右：整月日曆 */
+  .top{display:flex;flex-direction:column;padding-bottom:16px;}
+  .mg{display:grid;grid-template-columns:repeat(7,1fr);justify-items:center;row-gap:3px;}
+  .mg .h{font-size:12px;font-weight:600;letter-spacing:1px;padding-bottom:4px;}
+  .mg .h.we{color:var(--accent);}
+  .mg .d{position:relative;width:34px;height:30px;line-height:30px;text-align:center;border-radius:15px;font-size:19px;font-weight:500;}
+  .mg .d.past{font-weight:300;}
+  .mg .d.hol{color:var(--accent);font-weight:700;}
+  .mg .d.now{background:var(--accent);color:#fff;font-weight:700;}
+  .mg .d.empty{visibility:hidden;}
+  .mg .d svg{position:absolute;right:-2px;top:-5px;width:13px;height:13px;}
   /* 下排：同一條水平線 */
   .info,.slots{border-top:2px solid #000;padding-top:14px;}
   .info .l1{overflow:hidden;font-size:25px;font-weight:500;line-height:1.4;white-space:nowrap;}
@@ -48,7 +40,7 @@
   .info .l2 svg{width:17px;height:17px;vertical-align:-3px;margin-right:4px;}
   .slots{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
   .slot .n{font-size:18px;font-weight:500;letter-spacing:2px;}
-  .slot svg{width:44px;height:44px;margin:3px 0 0;}
+  .slot svg{width:48px;height:48px;margin:4px 0 0;}
   .slot .t{font-size:21px;font-weight:600;line-height:1.25;white-space:nowrap;}
   .slot .p{font-size:16px;font-weight:600;color:var(--blue);}
   .slot .p.dry{color:#000;font-weight:400;}
@@ -65,11 +57,7 @@
       <div class="month"><span class="en">{{month_en}}</span><span class="zh">{{month_zh}}月</span><span class="yr">{{year}}</span></div>
     </div>
     <div class="top">
-      <div class="week">{{week}}</div>
-      <div class="now-wx">
-        <div class="ico">{{wx_icon}}</div>
-        <div class="txt"><div class="line"><span class="desc">{{wx_desc}}</span><span class="temp">{{wx_temp}}</span></div><div class="meta">{{wx_meta}}</div></div>
-      </div>
+      <div class="mg">{{month_grid}}</div>
     </div>
     <div class="info">
       <div class="l1">{{info_l1}}</div>
@@ -78,5 +66,5 @@
     </div>
     <div class="slots">{{slots}}</div>
   </div>
-  <div class="foot"><span>高雄 · 天氣 {{wx_src}}</span><span>更新 {{updated}}</span></div>
+  <div class="foot"><span>高雄 · {{wx_day}} · 天氣 {{wx_src}}</span><span>更新 {{updated}}</span></div>
 </div></body></html>
