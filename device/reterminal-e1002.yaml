@@ -155,7 +155,7 @@ script:
                 id: sleeper
                 sleep_duration: 1h
 
-  # 睡到下一個時段：01:30、06:30、12:30、18:30（台灣時間）
+  # 睡到下一個時段：05:30、12:30（台灣時間），一天醒兩次省電
   - id: go_sleep
     then:
       - lambda: |-
@@ -167,7 +167,7 @@ script:
             auto now = id(sntp_time).now();
             if (!now.is_valid()) return 6 * 3600 * 1000;
             int secs = now.hour * 3600 + now.minute * 60 + now.second;
-            const int slots[] = {1 * 3600 + 1800, 6 * 3600 + 1800, 12 * 3600 + 1800, 18 * 3600 + 1800};
+            const int slots[] = {5 * 3600 + 1800, 12 * 3600 + 1800};
             int best = 24 * 3600 + slots[0] - secs;
             for (int s : slots) {
               if (s - secs > 600) { best = s - secs; break; }
