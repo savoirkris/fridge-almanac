@@ -94,7 +94,7 @@ def month_grid(d: date) -> str:
     for day in range(1, calendar.monthrange(d.year, d.month)[1] + 1):
         t = date(d.year, d.month, day)
         h = holiday_info(t)
-        cls = "now" if t == d else ("hol" if h["holiday"] else ("past" if t < d else ""))
+        cls = ("now hol" if h["holiday"] else "now") if t == d else ("hol" if h["holiday"] else ("past" if t < d else ""))
         cake = CAKE if birthdays_on(t) else ""
         out.append(f'<div class="d {cls}">{cake}{day}</div>')
     return "".join(out)
