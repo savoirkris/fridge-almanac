@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>日曆</title>
+<style>
+  /* 800×480 橫式。2×2 格線：上排＝日期｜當週＋今日天氣，下排＝節氣農曆｜整日四時段。
+     下排兩格共用同一條水平線。只用電子紙能顯示的黑、白、紅、黃、藍 */
+  :root{--red:#e60012;--yellow:#f5c400;--blue:#0040ff;--ink:#000;--bg:#fff;--accent:#e60012;}
+  :root{--bg:#ffffff;--accent:#e60012;}
+  html,body{margin:0;width:800px;height:480px;background:var(--bg);color:var(--ink);
+    font-family:"Helvetica Neue","Noto Sans TC","PingFang TC",sans-serif;overflow:hidden;}
+  .page{box-sizing:border-box;width:800px;height:480px;padding:22px 30px 14px;display:flex;flex-direction:column;}
+  .main{margin:auto 0;display:grid;grid-template-columns:322px 1fr;column-gap:30px;}
+  /* 上排左：日期 */
+  .date{padding-bottom:20px;}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;}
+  .num{font-size:204px;font-weight:800;line-height:.84;letter-spacing:-8px;margin-left:-6px;}
+  .num.hol{color:var(--accent);}
+  .wd{text-align:right;padding-bottom:8px;}
+  .wd .en{font-size:31px;font-weight:400;letter-spacing:1px;}
+  .wd .zh{font-size:21px;font-weight:500;margin-top:2px;}
+  .month{margin-top:16px;display:flex;align-items:baseline;gap:10px;}
+  .month .en{font-size:27px;font-weight:600;letter-spacing:3px;}
+  .month .zh{font-size:22px;font-weight:400;}
+  .month .yr{margin-left:auto;font-size:22px;font-weight:400;letter-spacing:2px;}
+  /* 上排右：整月日曆 */
+  .top{display:flex;flex-direction:column;padding-bottom:16px;}
+  .mg{display:grid;grid-template-columns:repeat(7,1fr);justify-items:center;row-gap:3px;}
+  .mg .h{font-size:12px;font-weight:600;letter-spacing:1px;padding-bottom:4px;}
+  .mg .h.we{color:var(--accent);}
+  .mg .d{position:relative;width:34px;height:30px;line-height:30px;text-align:center;border-radius:15px;font-size:19px;font-weight:500;}
+  .mg .d.past{font-weight:300;}
+  .mg .d.hol{color:var(--accent);font-weight:700;}
+  .mg .d.now{background:#000;color:#fff;font-weight:700;}          /* 今天：平日黑底 */
+  .mg .d.now.hol{background:var(--accent);}                          /* 今天是假日：紅底 */
+  .mg .d.empty{visibility:hidden;}
+  .mg .d svg{position:absolute;right:-2px;top:-5px;width:13px;height:13px;}
+  /* 下排：同一條水平線 */
+  .info,.slots{border-top:2px solid #000;padding-top:14px;}
+  .info .l1{overflow:hidden;font-size:25px;font-weight:500;line-height:1.4;white-space:nowrap;}
+  .info .l2{overflow:hidden;font-size:17px;font-weight:400;line-height:1.5;white-space:nowrap;margin-top:3px;}
+  .info .hl,.info b{color:var(--accent);font-weight:700;}
+  .info .l2 svg{width:17px;height:17px;vertical-align:-3px;margin-right:4px;}
+  .slots{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
+  .slot .n{font-size:18px;font-weight:500;letter-spacing:2px;}
+  .slot svg{width:48px;height:48px;margin:4px 0 0;}
+  .slot .t{font-size:21px;font-weight:600;line-height:1.25;white-space:nowrap;}
+  .slot .p{font-size:16px;font-weight:600;color:var(--blue);}
+  .slot .p.dry{color:#000;font-weight:400;}
+  .foot{display:flex;justify-content:space-between;font-size:11px;font-weight:500;letter-spacing:2px;}
+  .foot span:last-child{margin-right:30px;}   /* 右下角留給韌體畫的電池圖示 */
+</style></head>
+<body><div class="page">
+  <div class="main">
+    <div class="date">
+      <div class="head">
+        <div class="num ">12</div>
+        <div class="wd"><div class="en">Mon</div><div class="zh">星期一</div></div>
+      </div>
+      <div class="month"><span class="en">OCTOBER</span><span class="zh">十月</span><span class="yr">2026</span></div>
+    </div>
+    <div class="top">
+      <div class="mg"><div class="h we">S</div><div class="h">M</div><div class="h">T</div><div class="h">W</div><div class="h">T</div><div class="h">F</div><div class="h we">S</div><div class="d empty"></div><div class="d empty"></div><div class="d empty"></div><div class="d empty"></div><div class="d past">1</div><div class="d past">2</div><div class="d hol"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#e60012" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2z"/><path d="M4 16c1.5 0 1.5 1.2 3 1.2S8.5 16 10 16s1.5 1.2 3 1.2S14.5 16 16 16s1.5 1.2 3 1.2S20.5 16 20 16"/><path d="M12 12V8"/><path d="M12 8c-1.2-1-1.2-2.4 0-3.5 1.2 1.1 1.2 2.5 0 3.5z" fill="#f5c400"/></svg>3</div><div class="d hol">4</div><div class="d past">5</div><div class="d past">6</div><div class="d past"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#e60012" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2z"/><path d="M4 16c1.5 0 1.5 1.2 3 1.2S8.5 16 10 16s1.5 1.2 3 1.2S14.5 16 16 16s1.5 1.2 3 1.2S20.5 16 20 16"/><path d="M12 12V8"/><path d="M12 8c-1.2-1-1.2-2.4 0-3.5 1.2 1.1 1.2 2.5 0 3.5z" fill="#f5c400"/></svg>7</div><div class="d past">8</div><div class="d hol">9</div><div class="d hol">10</div><div class="d hol">11</div><div class="d now">12</div><div class="d ">13</div><div class="d ">14</div><div class="d ">15</div><div class="d ">16</div><div class="d hol">17</div><div class="d hol">18</div><div class="d ">19</div><div class="d ">20</div><div class="d ">21</div><div class="d ">22</div><div class="d ">23</div><div class="d hol">24</div><div class="d hol">25</div><div class="d hol">26</div><div class="d ">27</div><div class="d ">28</div><div class="d ">29</div><div class="d ">30</div><div class="d hol">31</div></div>
+    </div>
+    <div class="info">
+      <div class="l1">霜降 10/23</div>
+      <div class="l1">農曆 九月初三</div>
+      <div class="l2">下個假日 <b>光復節</b> 10/25 · 13 天後</div>
+    </div>
+    <div class="slots"><div class="slot"><div class="n">清晨</div><svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg"><g stroke="#000" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="14" x2="32" y2="7" transform="rotate(0 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(45 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(90 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(135 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(180 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(225 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(270 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(315 32 32)"/></g><circle cx="32" cy="32" r="12" fill="#f5c400" stroke="#000" stroke-width="3.5"/></svg><div class="t">25–26°</div><div class="p dry">0%</div></div><div class="slot"><div class="n">上午</div><svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg"><g stroke="#000" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="14" x2="32" y2="7" transform="rotate(0 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(45 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(90 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(135 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(180 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(225 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(270 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(315 32 32)"/></g><circle cx="32" cy="32" r="12" fill="#f5c400" stroke="#000" stroke-width="3.5"/></svg><div class="t">25–30°</div><div class="p dry">0%</div></div><div class="slot"><div class="n">下午</div><svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg"><g stroke="#000" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="14" x2="32" y2="7" transform="rotate(0 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(45 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(90 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(135 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(180 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(225 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(270 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(315 32 32)"/></g><circle cx="32" cy="32" r="12" fill="#f5c400" stroke="#000" stroke-width="3.5"/></svg><div class="t">29–30°</div><div class="p dry">0%</div></div><div class="slot"><div class="n">晚上</div><svg viewBox="0 0 64 68" xmlns="http://www.w3.org/2000/svg"><g transform="translate(14 -6) scale(.62)"><g stroke="#000" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="14" x2="32" y2="7" transform="rotate(0 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(45 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(90 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(135 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(180 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(225 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(270 32 32)"/><line x1="32" y1="14" x2="32" y2="7" transform="rotate(315 32 32)"/></g><circle cx="32" cy="32" r="12" fill="#f5c400" stroke="#000" stroke-width="3.5"/></g><path d="M20 50h26a11 11 0 0 0 1-22 15 15 0 0 0-29 4 9 9 0 0 0 2 18z" fill="#fff" stroke="#000" stroke-width="3.5" stroke-linejoin="round"/></svg><div class="t">27–28°</div><div class="p dry">0%</div></div></div>
+  </div>
+  <div class="foot"><span>高雄 · 日出 05:53 · 日落 17:37 · 紫外線 高 · 天氣 中央氣象署 / Open-Meteo</span><span>更新 10/11 06:05</span></div>
+</div></body></html>
